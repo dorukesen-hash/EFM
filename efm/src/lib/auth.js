@@ -26,19 +26,21 @@ function verify(token) {
         return null;
     }
 }
-const cookieStore = await cookies();
 
 export function createSession(email) {
+    const cookieStore = cookies();
     const token = sign({ email, iat: Date.now() });
     cookieStore.set('session', token, { httpOnly: true, path: '/' });
 }
 
-export async function getSession() {
+export function getSession() {
+    const cookieStore = cookies();
     const token = cookieStore.get('session')?.value;
     if (!token) return null;
     return verify(token);
 }
 
 export function destroySession() {
+    const cookieStore = cookies();
     cookieStore.delete('session');
 }

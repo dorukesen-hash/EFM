@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
-import users from '@/data/users';
+import { getDb } from '@/lib/firebaseAdmin';
+
+const db = getDb();
+const users = db.collection('users');
 
 export async function POST(request) {
     const { email, password } = await request.json();
-    if (users.has(email)) {
+    const doc = await users.doc(email).get();
+    if (doc.exists) {
         return NextResponse.json({ error: 'User already exists' }, { status: 400 });
     }
-    users.set(email, { email, password });
+    await users.doc(email).set({ email, password });
     return NextResponse.json({ success: true });
 }

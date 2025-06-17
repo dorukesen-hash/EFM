@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { googleSignIn } from '../../lib/auth';
+
 
 export default function LoginPage() {
     const router = useRouter();
@@ -31,6 +33,7 @@ export default function LoginPage() {
             <input name="password" type="password" placeholder="Password" className="border p-2" required />
             {error && <p className="text-red-500">{error}</p>}
             <button type="submit" className="bg-blue-500 text-white p-2">Login</button>
+            <button onClick={googleSignIn}>Login with Google</button>
         </form>
     );
 }

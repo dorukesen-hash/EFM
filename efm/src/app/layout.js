@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { checkSession } from '@/lib/auth';
 
 
 const geistSans = Geist({
@@ -19,12 +18,6 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-    const session = await checkSession();
-
-    if (!session) {
-        // Eğer oturum yoksa, giriş sayfasına yönlendir
-        return <Redirect to="/admin" />;
-    }
     return (
     <html lang="en">
       <body

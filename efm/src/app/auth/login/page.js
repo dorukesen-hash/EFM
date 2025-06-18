@@ -1,7 +1,11 @@
+// auth/login/page.js
+
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import GoogleLoginButton from '@/components/GoogleLoginButton';
+import styles from './login.module.css';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -11,23 +15,29 @@ export default function LoginPage() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-
+        setError('');
         try {
             const response = await fetch('/api/auth', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json',},
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ email, password }),
+                credentials: 'include', // Cookie için eklendi
             });
-            response.ok ? router.push('/') : setError('An error occurred during login');
+            if (response.ok) {
+                router.push('/auth/profile'); // Başarılı girişte profile'a yönlendir
+            } else {
+                const data = await response.json().catch(() => ({}));
+                setError(data.error || 'Giriş sırasında bir hata oluştu');
+            }
         } catch (err) {
-            setError('An error occurred during login');
+            setError('Giriş sırasında bir hata oluştu');
             console.error('Error during login:', err);
         }
     };
 
     return (
-        <div className="login-container">
-            <h1>Login</h1>
+        <div className={styles['login-container']}>
+            <h1>Giriş Yap</h1>
             <form onSubmit={handleLogin}>
                 <div>
                     <label htmlFor="email">Email</label>
@@ -40,7 +50,7 @@ export default function LoginPage() {
                     />
                 </div>
                 <div>
-                    <label htmlFor="password">Password</label>
+                    <label htmlFor="password">Şifre</label>
                     <input
                         id="password"
                         type="password"
@@ -49,9 +59,12 @@ export default function LoginPage() {
                         required
                     />
                 </div>
-                {error && <div className="error">{error}</div>}
-                <button type="submit">Login</button>
+                {error && <div className={styles.error}>{error}</div>}
+                <button type="submit">Giriş Yap</button>
             </form>
+            <div style={{ marginTop: 16 }}>
+                <GoogleLoginButton />
+            </div>
         </div>
     );
 }

@@ -1,0 +1,36 @@
+src/
+    app/
+        api/
+            admin/
+            auth/
+                google/
+                register/
+                login/
+                logout/
+            user/
+        auth/
+            register/
+            login/
+            profile/
+        admin/
+            dashboard/
+            users/
+            blogs/
+            articles/
+        pages/
+            home/
+            about/
+            contact/
+            blog/
+            article/
+            faq/
+            services/
+    components/
+    services/
+    utils/
+    styles/
+    assets/
+    tests/
+
+
+

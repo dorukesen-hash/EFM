@@ -1,16 +1,20 @@
-import { cookies } from 'next/headers'; // next/headers'dan cookies fonksiyonunu import et
+import admin from './firebaseAdmin';
+import { cookies } from 'next/headers';
 
 export async function checkSession() {
-    const cookieStore = await cookies();  // cookies() fonksiyonunu await ile kullan
-    const sessionToken = cookieStore.get('session')?.value;  // session token'ı al
-
-    if (!sessionToken) {
-        return null;
-    }
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get('session')?.value;
+    if (!sessionToken) return null;
 
     try {
-        return { email: 'user@example.com' };
-    } catch (error) {
+        const decoded = await admin.auth().verifyIdToken(sessionToken);
+        // Custom claims üzerinden admin kontrolü
+        return {
+            uid: decoded.uid,
+            email: decoded.email,
+            isAdmin: decoded.isAdmin || false
+        };
+    } catch {
         return null;
     }
 }

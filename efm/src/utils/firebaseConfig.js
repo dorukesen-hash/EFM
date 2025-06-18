@@ -1,7 +1,9 @@
-// lib/firebaseConfig.js
+// utils/firebaseConfig.js
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // const firebaseConfig = {
 //     apiKey: process.env.FIREBASE_API_KEY,
@@ -15,7 +17,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyDIAfy5LA0b8sB4bev3zXvoJuCYQys7itQ",
     authDomain: "efm-db.firebaseapp.com",
     projectId: "efm-db",
-    storageBucket: "efm-db.firebasestorage.app",
+    storageBucket: "efm-db.appspot.com",
     messagingSenderId: "153564736062",
     appId: "1:153564736062:web:bb778564fc67b66f5b7f6f",
     measurementId: "G-R5FHV7ZTHJ"

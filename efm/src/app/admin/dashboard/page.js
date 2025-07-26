@@ -1,7 +1,7 @@
 // src/app/admin/dashboard/page.js
 'use client';
 
-import { useAuth } from '@/utils/context/AuthContext';
+import { useAuth } from '../../../utils/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 

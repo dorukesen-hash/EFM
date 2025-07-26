@@ -1,15 +1,10 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from '@/utils/context/AuthContext';
+import { ToastContainer } from 'react-toastify';
+import Navbar from '@/components/Navbar';
+import Footer from "@/components/Footer";
+import {Whatsapp} from "@/components/Whatsapp";
 
 export const metadata = {
   title: "Create Next App",
@@ -19,10 +14,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className="bg-background text-primary relative min-h-screen">
+        <AuthProvider>
+          <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
+          <Whatsapp/>
+          <Navbar />
+          {children}
+          <Footer/>
+        </AuthProvider>
       </body>
     </html>
   );

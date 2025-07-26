@@ -1,0 +1,42 @@
+src/
+    app/
+        admin/
+            dashboard/
+            users/
+            blogs/
+            articles/
+            images/
+        api/
+            admin/
+            auth/
+                google/
+                login/
+                logout/
+                register/
+            user/
+        auth/
+            login/
+            profile/
+            register/
+        pages/
+            about/
+            contact/
+            blog/
+            article/
+            faq/
+            services/
+    components/
+    services/
+        firebase/
+            firebaseAdmin/
+            firebaseConfig/
+        firestore/
+            firestore/
+    utils/
+        context/
+            userContext/
+        hooks/
+    assets/
+
+
+

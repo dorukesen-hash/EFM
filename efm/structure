@@ -1,24 +1,24 @@
 src/
     app/
-        api/
-            admin/
-            auth/
-                google/
-                register/
-                login/
-                logout/
-            user/
-        auth/
-            register/
-            login/
-            profile/
         admin/
             dashboard/
             users/
             blogs/
             articles/
+            images/
+        api/
+            admin/
+            auth/
+                google/
+                login/
+                logout/
+                register/
+            user/
+        auth/
+            login/
+            profile/
+            register/
         pages/
-            home/
             about/
             contact/
             blog/
@@ -27,10 +27,16 @@ src/
             services/
     components/
     services/
+        firebase/
+            firebaseAdmin/
+            firebaseConfig/
+        firestore/
+            firestore/
     utils/
-    styles/
+        context/
+            userContext/
+        hooks/
     assets/
-    tests/
 
 
 

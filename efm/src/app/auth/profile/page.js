@@ -58,7 +58,7 @@ export default function ProfilePage() {
             </div>
             {user.photoURL && (
                 <div className="flex flex-col items-center mt-4">
-                  <Image src={user.photoURL} alt="Profil Fotoğrafı" className="w-24 h-24 rounded-full border" />
+                  <Image src={user.photoURL} alt="Profil Fotoğrafı" width={24} height={24} className="w-24 h-24 rounded-full border" />
                 </div>
             )}
             <div className="mt-6 text-sm text-gray-500">Bu sayfada profil bilgilerinizi görüntüleyebilirsiniz.</div>

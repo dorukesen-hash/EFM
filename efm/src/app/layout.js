@@ -1,10 +1,10 @@
 import "./globals.css";
 import 'react-toastify/dist/ReactToastify.css';
-import { AuthProvider } from '@/utils/context/AuthContext';
+import { AuthProvider } from '../utils/context/AuthContext';
 import { ToastContainer } from 'react-toastify';
-import Navbar from '@/components/Navbar';
-import Footer from "@/components/Footer";
-import {Whatsapp} from "@/components/Whatsapp";
+import Navbar from '../components/Navbar';
+import Footer from "../components/Footer";
+import { Whatsapp } from "../components/Whatsapp";
 
 export const metadata = {
   title: "Create Next App",

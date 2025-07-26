@@ -1,5 +1,5 @@
 import Image from "next/image";
-import bioPic from "@/assets/bio.jpg";
+import bioPic from "../../../assets/bio.jpg";
 import Link from "next/link";
 
 export const metadata = {

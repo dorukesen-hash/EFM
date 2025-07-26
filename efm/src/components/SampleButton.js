@@ -1,6 +1,6 @@
 "use client";
 
-import {useAuth} from "@/utils/context/AuthContext";
+import {useAuth} from "../utils/context/AuthContext";
 
 
 export default function SampleButton() {

@@ -2,13 +2,10 @@
 
 import { services } from "./servicesData";
 import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ServicesPage() {
 	const [selected, setSelected] = useState(services[0].key);
 	const selectedService = services.find((s) => s.key === selected);
-	const router = useRouter();
-	const searchParams = useSearchParams();
 
 	// URL hash ile doğrudan hizmet açılması için effect
 	useEffect(() => {

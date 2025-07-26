@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { services } from "@/app/pages/services/servicesData";
+import { services } from "../app/pages/services/servicesData";
 
 export default function Footer() {
 
@@ -31,7 +31,7 @@ export default function Footer() {
                 <div className="flex-1 min-w-[180px] mb-4 text-center ">
                     <h4 className="text-lg font-semibold mb-3">Makaleler</h4>
                     <ul className="list-none space-y-2 w-full h-full flex flex-col items-center">
-                        {require("@/app/pages/article/articles.js").default.map(article => (
+                        {require("../app/pages/article/articles.js").default.map(article => (
                             <a key={article.slug} href={`/pages/article/${article.slug}`} className="w-full py-1 h-full text-white hover:text-secondary transition-all transition-500">{article.title}</a>
                         ))}
                     </ul>

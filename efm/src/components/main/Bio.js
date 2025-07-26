@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import bio from "@/assets/bio.jpg";
+import bio from "../../assets/bio.jpg";
 
 export default function Bio() {
 

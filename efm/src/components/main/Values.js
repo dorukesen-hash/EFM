@@ -1,8 +1,8 @@
-import {Honest} from "@/assets/values/Honest";
-import {Privacy} from "@/assets/values/Privacy";
-import {Professional} from "@/assets/values/Professional";
-import {Solution} from "@/assets/values/Solution";
-import {Improvement} from "@/assets/values/Improvement";
+import {Honest} from "../../assets/values/Honest";
+import {Privacy} from "../../assets/values/Privacy";
+import {Professional} from "../../assets/values/Professional";
+import {Solution} from "../../assets/values/Solution";
+import {Improvement} from "../../assets/values/Improvement";
 
 export default function Values() {
     return (

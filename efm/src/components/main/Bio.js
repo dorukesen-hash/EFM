@@ -20,7 +20,7 @@ export default function Bio() {
             <div className="w-full md:w-2/3 flex flex-col justify-center items-start text-left">
                 <h2 className="text-4xl font-bold mb-4">Av. Enver Furkan METE</h2>
                 <p className="text-lg mb-4">
-                    Av. Enver Furkan Mete ortaöğretim ve lise eğitimini Rize'de tamamlamış, lisans eğitimini ise Ankara Üniversitesi Hukuk Fakültesi’nde bitirmiştir. Mezuniyetinin ardından avukatlık kariyerine Rize Barosu’nda başlamış olup halen Rize Barosu’na bağlı olarak mesleğini sürdürmektedir.
+                    Av. Enver Furkan Mete ortaöğretim ve lise eğitimini Rize&apos;de tamamlamış, lisans eğitimini ise Ankara Üniversitesi Hukuk Fakültesi’nde bitirmiştir. Mezuniyetinin ardından avukatlık kariyerine Rize Barosu’nda başlamış olup halen Rize Barosu’na bağlı olarak mesleğini sürdürmektedir.
                 </p>
                 <p className="text-lg mb-2">
                     Avukatlık mesleğini icra ederken birçok mesleki konferans ve eğitime katılmış, çeşitli alanlarda sertifikalar almaya hak kazanmıştır. Özellikle gayrimenkul, kira, iş, boşanma ve ticaret davaları ile ceza hukuku alanında çalışmalarını yoğunlaştırmıştır.

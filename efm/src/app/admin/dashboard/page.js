@@ -4,6 +4,7 @@
 import { useAuth } from '../../../utils/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import Link from "next/link";
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -27,7 +28,7 @@ export default function AdminDashboard() {
     <div className="flex min-h-screen">
       {/* Sol Navigasyon */}
       <aside className="w-56 bg-gray-900 text-white flex flex-col py-8 px-4 min-h-screen">
-        <a href="/" className="mb-8 text-lg font-bold text-blue-400 hover:text-blue-200 transition">Anamenü</a>
+        <Link href="/" className="mb-8 text-lg font-bold text-blue-400 hover:text-blue-200 transition">Anamenü</Link>
         {/* Diğer admin linkleri eklenebilir */}
       </aside>
       {/* Ana İçerik */}

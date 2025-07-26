@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 
-export default function faqPage() {
+export default function FaqPage() {
     const [openIdxs, setOpenIdxs] = useState([]);
 
     const faq = [

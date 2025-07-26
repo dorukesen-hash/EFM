@@ -4,7 +4,7 @@ import admin from 'firebase-admin';
 import { readFileSync } from 'fs';
 
 // Service account dosyasının yolu .env'den alınır
-const serviceAccountPath = './serviceAccountKey.json';
+const serviceAccountPath = '../../serviceAccountKey.json';
 const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
 console.log(serviceAccount);
 if (!admin.apps.length) {

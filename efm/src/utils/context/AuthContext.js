@@ -36,7 +36,6 @@ export function AuthProvider({ children }) {
       firstLoad = false;
     }
     checkSession();
-    // eslint-disable-next-line
   }, []);
 
   return (

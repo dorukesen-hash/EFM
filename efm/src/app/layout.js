@@ -1,7 +1,8 @@
 import "./globals.css";
 import 'react-toastify/dist/ReactToastify.css';
-import { AuthProvider } from '../utils/context/AuthContext';
 import { ToastContainer } from 'react-toastify';
+
+import { AuthProvider } from '../utils/context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from "../components/Footer";
 import { Whatsapp } from "../components/Whatsapp";

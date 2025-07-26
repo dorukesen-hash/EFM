@@ -37,7 +37,7 @@ export default function Blog() {
     const article = articles[current];
 
     return (
-        <section className=" relative max-w-[1440px] w-full flex flex-col items-center justify-center text-primary pt-30 pb-20 bg-white text-primary">
+        <section className=" relative max-w-[1440px] w-full flex flex-col items-center justify-center text-primary pt-30 pb-20 bg-white">
             <h2 className="text-3xl font-bold mb-8">Makaleler</h2>
             <div className="w-full flex items-start justify-center gap-12 ">
             <button onClick={prev} aria-label="Önceki" className="group mt-36 w-10 h-10 flex items-center justify-center text-2xl bg-transparent cursor-pointer">

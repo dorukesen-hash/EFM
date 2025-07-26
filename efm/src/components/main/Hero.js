@@ -1,4 +1,4 @@
-import {Lady} from "@/assets/Lady";
+import {Lady} from "../../assets/Lady";
 
 
 export default function Hero() {

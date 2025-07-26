@@ -1,15 +1,15 @@
 import Image from 'next/image';
-import ticaret from '@/assets/areas/ticaret.webp';
-import aile from '@/assets/areas/aile.jpg';
-import kvkk from '@/assets/areas/kvkk.jpg';
-import idare from '@/assets/areas/idare.jpg';
-import sigorta from '@/assets/areas/sigorta.jpg';
-import ceza from '@/assets/areas/ceza.jpg';
-import tazminat from '@/assets/areas/tazminat.jpg';
-import boşanma from '@/assets/areas/boşanma.jpeg';
-import bilişim from '@/assets/areas/bilişim.jpg';
-import sağlık from '@/assets/areas/sağlık.jpg';
-import gayrimenkul from '@/assets/areas/miras.jpeg';
+import ticaret from '../../assets/areas/ticaret.webp';
+import aile from '../../assets/areas/aile.jpg';
+import kvkk from '../../assets/areas/kvkk.jpg';
+import idare from '../../assets/areas/idare.jpg';
+import sigorta from '../../assets/areas/sigorta.jpg';
+import ceza from '../../assets/areas/ceza.jpg';
+import tazminat from '../../assets/areas/tazminat.jpg';
+import bosanma from '../../assets/areas/boşanma.jpeg';
+import bilisim from '../../assets/areas/bilişim.jpg';
+import saglik from '../../assets/areas/sağlık.jpg';
+import miras from '../../assets/areas/miras.jpeg';
 
 
 
@@ -71,28 +71,28 @@ export default function Areas() {
             title: "Boşanma Davaları",
             description:
                 "Boşanma, velayet, nafaka ve mal paylaşımı davalarında uzman desteği sağlıyoruz.",
-            bg: boşanma
+            bg: bosanma
         },
         {
             icon: "💻",
             title: "Bilişim Hukuku",
             description:
                 "İnternet, sosyal medya ve bilişim suçları ile ilgili hukuki danışmanlık ve dava hizmeti veriyoruz.",
-            bg: bilişim
+            bg: bilisim
         },
         {
             icon: "🏥",
             title: "Sağlık Hukuku",
             description:
                 "Sağlık hizmetlerinden kaynaklanan uyuşmazlıklar ve hasta hakları konusunda hukuki destek sunuyoruz.",
-            bg: sağlık
+            bg: saglik
         },
         {
             icon: "🏘️",
             title: "Gayrimenkul Hukuku",
             description:
                 "Tapu işlemleri, ipotek, kira ve taşınmaz davalarında hukuki danışmanlık veriyoruz.",
-            bg: gayrimenkul
+            bg: miras
         }
     ];
 

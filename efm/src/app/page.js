@@ -1,12 +1,12 @@
 import Image from "next/image";
-import parallax from "@/assets/hero-1.png";
-import Hero from "@/components/main/Hero";
-import Bio from "@/components/main/Bio";
-import Reviews from "@/components/main/Reviews";
-import Services from "@/components/main/Services";
-import Areas from "@/components/main/Areas";
-import Values from "@/components/main/Values";
-import Blog from "@/components/main/Blog";
+import parallax from "../assets/hero-1.png";
+import Hero from "../components/main/Hero";
+import Bio from "../components/main/Bio";
+import Reviews from "../components/main/Reviews";
+import Services from "../components/main/Services";
+import Areas from "../components/main/Areas";
+import Values from "../components/main/Values";
+import Blog from "../components/main/Blog";
 
 export default function HomePage() {
 

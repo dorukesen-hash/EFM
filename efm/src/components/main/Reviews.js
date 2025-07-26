@@ -18,6 +18,7 @@ export default function Reviews() {
 			})
 			.catch((err) => {
 				setError("Yorumlar alınamadı.");
+				console.log(err);
 				setLoading(false);
 			});
 	}, []);

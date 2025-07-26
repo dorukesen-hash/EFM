@@ -103,7 +103,7 @@ export default function ContactPage() {
                     </g>
                 </svg>
             </a>
-            <a href="https://wa.me/905339490553" target="_blank" className="group h-[180px] flex flex-col items-center justify-center gap-4 border-1 rounded-md border-gray-300 hover:border-secondary" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/905339490553" target="_blank" className="group h-[180px] flex flex-col items-center justify-center gap-4 border-1 rounded-md border-gray-300 hover:border-secondary" rel="noopener noreferrer">
                 <p className="text-center"><strong>Whatsapp:</strong><br/> 0533 949 05 53</p>
                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                      width="48" height="48" viewBox="0 0 512.000000 512.000000"

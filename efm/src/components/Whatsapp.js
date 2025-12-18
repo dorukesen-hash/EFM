@@ -2,11 +2,12 @@ export const Whatsapp = () => {
 
     return(
         <a href="https://wa.me/905339490553" target="_blank"
-           className="w-[56px] h-[56px] fixed bottom-5 right-5 z-50 cursor-pointer rounded-full bg-[#25D366] flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-300 animate-bounce">
+           className="w-12 h-12 md:w-14 md:h-14 fixed bottom-4 right-4 md:bottom-5 md:right-5 z-50 cursor-pointer rounded-full bg-[#25D366] flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-300 animate-bounce"
+           aria-label="WhatsApp ile iletişim">
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                 width="60" height="60" viewBox="0 0 512.000000 512.000000"
+                 width="28" height="28" viewBox="0 0 512.000000 512.000000"
                  preserveAspectRatio="xMidYMid meet"
-                className="fixed"
+                 className=""
             >
 
                 <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"

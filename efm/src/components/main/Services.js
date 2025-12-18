@@ -52,20 +52,20 @@ export default function Services() {
 
     return (
         <section
-            className="max-w-[1440px] w-full flex flex-col items-center justify-center text-primary pt-30 pb-20 bg-white"
+            className="max-w-[1440px] w-full page-container flex flex-col items-center justify-center text-primary pt-20 md:pt-30 pb-16 md:pb-20 bg-white"
             aria-labelledby="services-title"
         >
-            <h2 id="services-title" className="text-4xl font-bold mb-10">
+            <h2 id="services-title" className="text-4xl font-bold mb-8 md:mb-10 text-center">
                 Hizmetlerimiz
             </h2>
-            <div className="flex flex-col gap-6 w-full max-w-2xl">
+            <div className="flex flex-col gap-4 md:gap-6 w-full max-w-2xl">
                 {services.map((service, idx) => (
                     <div
-                        key={idx}
+                        key={service.title}
                         className="overflow-hidden transition-all duration-300 border-1 border-transparent "
                     >
                         <button
-                            className={`flex items-center w-full px-6 py-4 text-left transition-colors ${openIdxs.includes(idx) ? 'bg-primary text-white' : 'bg-foreground text-primary'} cursor-pointer`}
+                            className={`flex items-center w-full px-4 md:px-6 py-3 md:py-4 text-left transition-colors ${openIdxs.includes(idx) ? 'bg-primary text-white' : 'bg-foreground text-primary'} cursor-pointer`}
                             onClick={() => {
                                 setOpenIdxs((prev) =>
                                     prev.includes(idx)
@@ -75,7 +75,7 @@ export default function Services() {
                             }}
                             aria-expanded={openIdxs.includes(idx)}
                         >
-                            <span className="font-semibold text-lg flex-1">{service.title}</span>
+                            <span className="font-semibold text-base md:text-lg flex-1">{service.title}</span>
                             <svg
                                 className={`w-5 h-5 ml-2 transform transition-transform duration-300 ${openIdxs.includes(idx) ? 'rotate-180' : ''}`}
                                 fill="none"
@@ -87,7 +87,7 @@ export default function Services() {
                             </svg>
                         </button>
                         <div
-                            className={`border-x-1 border-b-1 border-secondary transition-all duration-800 ease-in-out px-4 text-justify ${openIdxs.includes(idx) ? 'max-h-40 py-10 opacity-100' : 'max-h-0 py-0 opacity-0'} overflow-hidden text-primary`}
+                            className={`border-x-1 border-b-1 border-secondary transition-all duration-700 ease-in-out px-4 text-center md:text-justify ${openIdxs.includes(idx) ? 'max-h-48 py-6 opacity-100' : 'max-h-0 py-0 opacity-0'} overflow-hidden text-primary`}
                             style={{
                                 transitionProperty: 'max-height, opacity, padding',
                             }}

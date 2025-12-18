@@ -3,8 +3,8 @@ import bioPic from "../../../assets/bio.jpg";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Hakkımızda - EFM Hukuk",
-  description: "EFM Hukuk'un misyonu, vizyonu ve temel değerleri hakkında daha fazla bilgi edinin. Profesyonel ve güvenilir hukuki çözümler sunuyoruz.",
+  title: "Hakkımızda - BHM Hukuk",
+  description: "BHM Hukuk'un misyonu, vizyonu ve temel değerleri hakkında daha fazla bilgi edinin. Profesyonel ve güvenilir hukuki çözümler sunuyoruz.",
 };
 
 const whyUs = [
@@ -29,7 +29,7 @@ export default function AboutPage() {
       <section className="max-w-[1440px] w-full bg-foreground text-primary py-24 border-b-1 border-secondary">
         <div className="container mx-auto px-4 flex items-center justify-center flex-col">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
-            EFM Hukuk Bürosu
+            BHM Hukuk Bürosu
           </h1>
         </div>
       </section>
@@ -41,7 +41,7 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-color-primary mb-6">Hikayemiz</h2>
             <div className="prose prose-lg max-w-none text-justify text-gray-800 opacity-95">
               <p>
-                EFM Hukuk, adaletin herkes için erişilebilir olması gerektiği inancıyla Av. Enver Furkan Mete tarafından kurulmuştur. Rize’de başlayan bu yolculuk, kısa sürede dürüstlük, şeffaflık ve müvekkil odaklı yaklaşımıyla güven kazanan bir hukuk bürosuna dönüşmüştür. Alanında uzman ekibiyle, hukukun karmaşık süreçlerinde müvekkillerine yol gösteren ve haklarını en etkin şekilde savunan bir çözüm ortağı olmayı ilke edinmiştir.
+                  BHM Hukuk, adaletin herkes için erişilebilir olması gerektiği inancıyla Av. Enver Furkan Mete tarafından kurulmuştur. Rize’de başlayan bu yolculuk, kısa sürede dürüstlük, şeffaflık ve müvekkil odaklı yaklaşımıyla güven kazanan bir hukuk bürosuna dönüşmüştür. Alanında uzman ekibiyle, hukukun karmaşık süreçlerinde müvekkillerine yol gösteren ve haklarını en etkin şekilde savunan bir çözüm ortağı olmayı ilke edinmiştir.
               </p>
             </div>
           </div>
@@ -56,7 +56,7 @@ export default function AboutPage() {
               <h3 className="text-3xl font-bold text-color-primary mb-4">Misyonumuz</h3>
               <div className="prose prose-lg max-w-none text-justify text-gray-800 opacity-95">
                 <p>
-                  EFM Hukuk’un misyonu; müvekkillerinin hukuki ihtiyaçlarını titizlikle analiz ederek, onlara özel, yenilikçi ve sonuç odaklı çözümler sunmaktır. Hukuki gelişmeleri ve değişen dünya dinamiklerini yakından takip ederek, bireysel ve kurumsal müvekkillerine yalnızca dava süreçlerinde değil, aynı zamanda önleyici danışmanlık hizmetleriyle de destek olmayı amaçlar. Temel hedefi, adalete giden yolda güvenilir bir yol arkadaşı olmaktır.
+                    BHM Hukuk’un misyonu; müvekkillerinin hukuki ihtiyaçlarını titizlikle analiz ederek, onlara özel, yenilikçi ve sonuç odaklı çözümler sunmaktır. Hukuki gelişmeleri ve değişen dünya dinamiklerini yakından takip ederek, bireysel ve kurumsal müvekkillerine yalnızca dava süreçlerinde değil, aynı zamanda önleyici danışmanlık hizmetleriyle de destek olmayı amaçlar. Temel hedefi, adalete giden yolda güvenilir bir yol arkadaşı olmaktır.
                 </p>
               </div>
             </div>
@@ -64,7 +64,7 @@ export default function AboutPage() {
               <h3 className="text-3xl font-bold text-color-primary mb-4">Vizyonumuz</h3>
               <div className="prose prose-lg max-w-none text-justify text-gray-800 opacity-95">
                 <p>
-                  EFM Hukuk’un vizyonu; hukuki danışmanlık ve avukatlık hizmetlerinde kalite, güven ve etik değerlerle anılan, ulusal düzeyde öncü bir hukuk bürosu olmaktır. Teknolojiyi ve modern yaklaşımları kullanarak hukuki süreçleri daha verimli ve erişilebilir kılmayı hedefler. Sadece bugünün sorunlarını çözmekle kalmayıp, yarının hukuki dünyasını şekillendiren, sürekli gelişen bir kurum olmayı amaç edinir.
+                    BHM Hukuk’un vizyonu; hukuki danışmanlık ve avukatlık hizmetlerinde kalite, güven ve etik değerlerle anılan, ulusal düzeyde öncü bir hukuk bürosu olmaktır. Teknolojiyi ve modern yaklaşımları kullanarak hukuki süreçleri daha verimli ve erişilebilir kılmayı hedefler. Sadece bugünün sorunlarını çözmekle kalmayıp, yarının hukuki dünyasını şekillendiren, sürekli gelişen bir kurum olmayı amaç edinir.
                 </p>
               </div>
             </div>
@@ -109,7 +109,7 @@ export default function AboutPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-color-primary">Neden EFM Hukuk?</h2>
+                <h2 className="text-3xl md:text-4xl font-bold text-color-primary">Neden BHM Hukuk?</h2>
                 <p className="text-lg mt-2 text-color-text-main opacity-70">Bizi farklı kılan özelliklerimiz.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8 text-center justify-center">

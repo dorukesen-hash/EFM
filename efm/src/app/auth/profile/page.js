@@ -9,6 +9,7 @@ import { useAuth } from '../../../utils/context/AuthContext';
 import app from '../../../services/firebase/firebaseConfig';
 import SampleButton from "../../../components/SampleButton";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ProfilePage() {
   const { user, loading, setUser } = useAuth();
@@ -62,6 +63,16 @@ export default function ProfilePage() {
                 </div>
             )}
             <div className="mt-6 text-sm text-gray-500">Bu sayfada profil bilgilerinizi görüntüleyebilirsiniz.</div>
+          </div>
+          <div className="mt-4">
+            {user.isAdmin && (
+                <Link
+                    href="/admin/dashboard"
+                    className="bg-primary  text-white font-semibold py-2 px-6 transition cursor-pointer mb-4"
+                >
+                  Admin Dashboard
+                </Link>
+            )}
           </div>
           <button
               onClick={handleLogout}

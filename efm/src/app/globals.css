@@ -28,6 +28,33 @@ html, body {
   font-family: 'Raleway', sans-serif;
 }
 
+/* Base tipografi ve erişilebilirlik iyileştirmeleri */
+html { scroll-behavior: smooth; }
+body { line-height: 1.6; color: var(--color-text-main); }
+
+h1 { font-size: clamp(1.75rem, 1.1rem + 2.2vw, 3.5rem); line-height: 1.15; }
+h2 { font-size: clamp(1.5rem, 1rem + 1.5vw, 2.5rem); line-height: 1.2; }
+h3 { font-size: clamp(1.25rem, 0.95rem + 1vw, 1.75rem); line-height: 1.25; }
+h4 { font-size: clamp(1.125rem, 0.9rem + 0.6vw, 1.375rem); line-height: 1.3; }
+
+p { text-wrap: pretty; }
+
+/* Görsellerin taşmasını engelle */
+img, svg, video { max-width: 100%; height: auto; }
+
+/* Odak için görünür ring */
+a, button, [role="button"], input, select, textarea {
+  outline-offset: 2px;
+}
+:focus-visible {
+  outline: 2px solid var(--color-secondary);
+}
+
+/* Container benzeri yatay boşluklar (küçük ekranlarda rahatlama) */
+.page-container { padding-left: 1rem; padding-right: 1rem; }
+@media (min-width: 768px) { .page-container { padding-left: 1.5rem; padding-right: 1.5rem; } }
+@media (min-width: 1024px) { .page-container { padding-left: 2rem; padding-right: 2rem; } }
+
 /* Değer kartları için parlama hover efekti */
 .value-card {
   position: relative;

@@ -42,7 +42,7 @@ export default function ServicesPage() {
 					</h1>
 				</div>
 			</section>
-			<div className="flex flex-col md:flex-row w-full max-w-[1440px] mx-auto bg-white mt-10">
+			<div className="flex flex-col md:flex-row w-full max-w-[1440px] mx-auto bg-white mt-10 page-container">
 				{/* Sol Navigasyon */}
 				<nav className="md:w-1/3 min-w-[220px] max-w-[400px]">
 					<ul className="space-y-2">
@@ -63,11 +63,11 @@ export default function ServicesPage() {
 					</ul>
 				</nav>
 				{/* Sağ İçerik */}
-				<section className="flex-1 p-8 flex flex-col justify-start">
+				<section className="flex-1 p-6 md:p-8 flex flex-col justify-start">
 					<h2 className="text-2xl font-bold mb-4 text-primary">
 						{selectedService.title}
 					</h2>
-					<p className="text-lg  leading-relaxed">
+					<p className="text-lg leading-relaxed">
 						{selectedService.description}
 					</p>
 				</section>

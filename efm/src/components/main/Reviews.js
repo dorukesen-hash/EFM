@@ -32,25 +32,25 @@ export default function Reviews() {
 	if (!data || !data.reviews) return null;
 
 	return (
-		<section className="max-w-[1440px] w-full flex flex-col items-center justify-center text-primary backdrop-blur-sm pt-30 pb-20 bg-white/25">
-			<h2 className="text-3xl font-bold mb-2">Müvekkillerimizin Değerlendirmeleri</h2>
-			<div className="mb-8 text-lg text-primary">
+		<section className="max-w-[1440px] w-full page-container flex flex-col items-center justify-center text-primary backdrop-blur-sm pt-20 md:pt-30 pb-16 md:pb-20 bg-white/25">
+			<h2 className="text-3xl font-bold mb-2 text-center">Müvekkillerimizin Değerlendirmeleri</h2>
+			<div className="mb-6 md:mb-8 text-base md:text-lg text-primary text-center">
 				Ortalama Puan: {data.averageRating} / 5
 			</div>
-			<div className="flex flex-col justify-between w-full px-8 h-[480px]">
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+			<div className="flex flex-col justify-between w-full">
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
 					{data.reviews.slice(page * 3, (page + 1) * 3).map((review, idx) => (
-						<div key={review.reviewId || idx} className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-start">
-							<div className="flex items-center gap-4 mb-2">
+						<div key={review.reviewId || idx} className="bg-white rounded-xl shadow-lg p-4 md:p-6 flex flex-col items-start">
+							<div className="flex items-center gap-3 md:gap-4 mb-2">
 								<Image
 									src={review.reviewer.profilePhotoUrl}
 									alt={review.reviewer.displayName}
 									width={80}
 									height={80}
-									className="w-10 h-10 rounded-full border"
+									className="w-8 h-8 md:w-10 md:h-10 rounded-full border"
 								/>
 								<div>
-									<p className="font-semibold text-lg">
+									<p className="font-semibold text-base md:text-lg">
 										{review.reviewer.displayName}
 									</p>
 									<p className="text-xs font-light">
@@ -75,7 +75,7 @@ export default function Reviews() {
 									</span>
 								))}
 							</div>
-							<p className="text-md text-gray-800 mb-2">
+							<p className="text-sm md:text-md text-gray-800 mb-2">
 								{review.comment}
 							</p>
 							{review.reviewReply?.comment && (
@@ -88,10 +88,10 @@ export default function Reviews() {
 					))}
 				</div>
 				{/* Pagination & Buttons */}
-				<div className="flex flex-col  justify-center items-center mt-8">
-					<p className="col-span-4 text-center w-full mb-6 text-sm text-primary">*Bu yorumlar Google işletme hesabından otomatik olarak alınmıştır.</p>
+				<div className="flex flex-col justify-center items-center mt-6 md:mt-8">
+					<p className="text-center w-full mb-4 md:mb-6 text-xs md:text-sm text-primary">*Bu yorumlar Google işletme hesabından otomatik olarak alınmıştır.</p>
 					<div className="flex gap-2">
-						{Array.from({ length: Math.ceil(data.reviews.length / 4) }).map((_, i) => (
+						{Array.from({ length: Math.ceil(data.reviews.length / 3) }).map((_, i) => (
 							<button
 								key={i}
 								onClick={() => setPage(i)}

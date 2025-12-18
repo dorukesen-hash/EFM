@@ -9,12 +9,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Email ve şifre zorunludur.' }, { status: 400 });
     }
 
-    // Firebase Admin SDK doğrudan şifre ile giriş desteklemez.
-    // Bunun için client tarafında Firebase JS SDK ile signIn yapılmalı ve idToken alınmalı.
-    // Ancak burada örnek olarak, email ve password ile giriş için custom bir çözüm:
-    // 1. Client tarafında signIn yapılır, idToken alınır ve sunucuya gönderilir.
-    // 2. Sunucu idToken'ı doğrular ve session oluşturur.
-    //
     // Burada sadece email ile kullanıcıyı bulup, custom token döneceğiz (şifre kontrolü client'ta olmalı)
     const userRecord = await admin.auth().getUserByEmail(email);
     if (!userRecord) {

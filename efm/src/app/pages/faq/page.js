@@ -59,7 +59,7 @@ export default function FaqPage() {
                 <div className="flex flex-col gap-6 w-full max-w-[1440px] mx-auto p-8">
                     {faq.map((item, idx) => (
                         <div
-                            key={idx}
+                            key={item.question}
                             className="overflow-hidden transition-all duration-300 border-1 border-transparent "
                         >
                             <button

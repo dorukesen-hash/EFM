@@ -22,13 +22,20 @@ export async function GET(req) {
     if (!uid) return NextResponse.json({ user: null }, { status: 200 });
     // Kullanıcıyı Firestore'dan veya Firebase'den çek
     const userRecord = await admin.auth().getUser(uid);
+    // Firestore'dan isAdmin bilgisini çek
+    const db = admin.firestore();
+    const userDoc = await db.collection('users').doc(uid).get();
+    let isAdmin = false;
+    if (userDoc.exists) {
+      isAdmin = userDoc.data().isAdmin || false;
+    }
     return NextResponse.json({
       user: {
         uid: userRecord.uid,
         email: userRecord.email,
         displayName: userRecord.displayName,
         photoURL: userRecord.photoURL || null,
-        isAdmin: userRecord.customClaims?.isAdmin || false,
+        isAdmin,
       }
     }, { status: 200 });
   } catch (error) {

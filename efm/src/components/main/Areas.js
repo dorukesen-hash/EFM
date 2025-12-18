@@ -97,27 +97,34 @@ export default function Areas() {
     ];
 
     return (
-        <section className="max-w-[1440px] w-full flex flex-col items-center justify-center text-primary pt-30 pb-20 bg-foreground">
+        <section className="max-w-[1440px]
+
+        w-full page-container flex flex-col items-center justify-center text-primary pt-20 md:pt-30 pb-16 md:pb-20 bg-foreground">
             <h2 className="text-4xl font-bold mb-10">Çalışma Alanlarımız</h2>
-            <div className="flex flex-wrap gap-8 w-full justify-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                 {areas.map((area, idx) => (
                     <div
-                        key={idx}
-                        className="group relative flex w-[360px] h-[340px] flex-col items-center justify-end text-center shadow-xl overflow-hidden rounded-md transition-all duration-500 hover:scale-105 hover:shadow-2xl"
+                        key={area.title}
+                        className="group h-[100px] md:h-[240px] relative flex w-full aspect-[4/3] sm:aspect-[9/8] md:aspect-[9/7] lg:aspect-[9/7] flex-col items-center justify-center text-center shadow-xl overflow-hidden rounded-md transition-all duration-500 md:hover:scale-105 md:hover:shadow-2xl"
                     >
-                        <div className="absolute inset-0 z-0 transition-all duration-500 grayscale-60 group-hover:grayscale-0">
+                        <div className="absolute inset-0 z-0 transition-all duration-500 grayscale-60 md:group-hover:grayscale-0">
                             <Image
                                 src={area.bg}
                                 alt={area.title}
                                 fill
-                                sizes="(max-width: 768px) 100vw, 360px"
-                                priority={idx < 2}
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                priority={idx === 0}
                                 className="object-cover object-center w-full h-full rounded-md"
                             />
                         </div>
-                        <div className="w-full flex flex-col items-center jus bg-foreground z-10 border-t-1 border-secondary h-[60px] group-hover:h-[160px] transition-all duration-800 ease-in-out">
-                            <h3 className="text-lg font-bold w-full min-h-[60px] max-h-[60px] py-4">{area.title}</h3>
-                            <p className="text-sm px-4 py-3 w-full max-h-0 group-hover:max-h-[160px] group-hover:min-h-[160px] transition-all duration-800 ease-in-out">{area.description}</p>
+                        {/* Mobil: başlık üzerine arka plan, Desktop: alt panel */}
+                        <div className="sm:hidden absolute inset-0 flex items-center justify-center z-10">
+                            <div className="absolute inset-0 bg-black/40 z-0"></div>
+                            <h3 className="text-base font-bold w-full px-3 py-2 text-center text-white relative z-10">{area.title}</h3>
+                        </div>
+                        <div className="hidden sm:flex w-full flex-col items-center bg-foreground/95 backdrop-blur-sm z-10 border-t-1 border-secondary min-h-[60px] transition-all duration-500">
+                            <h3 className="text-lg font-bold w-full py-4">{area.title}</h3>
+                            <p className="text-sm px-4 pb-4 max-h-0 md:group-hover:max-h-[200px] md:group-hover:py-2 overflow-hidden transition-all duration-500 ease-in-out">{area.description}</p>
                         </div>
                     </div>
                 ))}

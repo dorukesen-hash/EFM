@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "İletişim - EFM Hukuk",
-  description: "EFM Hukuk ile iletişime geçin. Sorularınız ve hukuki ihtiyaçlarınız için bize ulaşın.",
+  title: "İletişim - BHM Hukuk",
+  description: "BHM Hukuk ile iletişime geçin. Sorularınız ve hukuki ihtiyaçlarınız için bize ulaşın.",
 };
 
 export default function ContactPage() {
@@ -14,9 +14,9 @@ export default function ContactPage() {
                   </h1>
               </div>
           </section>
-        <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-[1440px] pt-20">
+        <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-[1440px] pt-20 page-container">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a href="tel:+905339490553" className="group h-[180px] flex flex-col items-center justify-center gap-4 p-4 border-1 rounded-md border-gray-300 hover:border-secondary">
+            <a href="tel:+905339490553" className="group min-h-[140px] md:min-h-[180px] flex flex-col items-center justify-center gap-4 p-4 border-1 rounded-md border-gray-300 hover:border-secondary">
                 <p className="text-center"><strong>Cep:</strong><br/> 0533 949 05 53</p>
                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                      width="48" height="48" viewBox="0 0 512.000000 512.000000">
@@ -48,7 +48,7 @@ export default function ContactPage() {
                     </g>
                 </svg>
             </a>
-            <a href="tel:+905339490553" className="group h-[180px] flex flex-col items-center justify-center gap-4 p-4 border-1 rounded-md border-gray-300 hover:border-secondary">
+            <a href="tel:+905339490553" className="group min-h-[140px] md:min-h-[180px] flex flex-col items-center justify-center gap-4 p-4 border-1 rounded-md border-gray-300 hover:border-secondary">
                 <p className="text-center"><strong>Cep:</strong><br/> 0533 949 05 53</p>
                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                      width="48" height="48" viewBox="0 0 512.000000 512.000000">
@@ -80,7 +80,7 @@ export default function ContactPage() {
                     </g>
                 </svg>
             </a>
-            <a href="mailto:info@enverfurkanmete.av.tr" className="group h-[180px] flex flex-col items-center justify-center gap-4 border-1 rounded-md border-gray-300 hover:border-secondary" target="_blank" rel="noopener noreferrer">
+            <a href="mailto:info@enverfurkanmete.av.tr" className="group min-h-[140px] md:min-h-[180px] flex flex-col items-center justify-center gap-4 border-1 rounded-md border-gray-300 hover:border-secondary" target="_blank" rel="noopener noreferrer">
                 <p className="text-center"><strong>Eposta:</strong><br/> info@enverfurkanmete.av.tr</p>
                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                      width="48" height="48" viewBox="0 0 512.000000 512.000000"
@@ -103,7 +103,7 @@ export default function ContactPage() {
                     </g>
                 </svg>
             </a>
-            <a href="https://wa.me/905339490553" target="_blank" className="group h-[180px] flex flex-col items-center justify-center gap-4 border-1 rounded-md border-gray-300 hover:border-secondary" rel="noopener noreferrer">
+            <a href="https://wa.me/905339490553" target="_blank" className="group min-h-[140px] md:min-h-[180px] flex flex-col items-center justify-center gap-4 border-1 rounded-md border-gray-300 hover:border-secondary" rel="noopener noreferrer">
                 <p className="text-center"><strong>Whatsapp:</strong><br/> 0533 949 05 53</p>
                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                      width="48" height="48" viewBox="0 0 512.000000 512.000000"
@@ -135,40 +135,42 @@ export default function ContactPage() {
                     </g>
                 </svg>
             </a>
-              <form className="flex flex-col gap-4 col-span-2 h-full border-1 border-gray-300 rounded-md p-4 items-center">
-                  <p className="text-lg mb-8 text-center">
+              <form className="flex flex-col gap-4 col-span-1 md:col-span-2 h-full border-1 border-gray-300 rounded-md p-4 items-center">
+                  <p className="text-lg mb-6 md:mb-8 text-center">
                       Sorularınız, talepleriniz veya hukuki danışmanlık ihtiyaçlarınız için aşağıdaki formu doldurarak bizimle iletişime geçebilirsiniz.
                   </p>
-                  <div className="w-full max-w-[400px]">
+                  <div className="w-full md:max-w-[400px]">
                       <label htmlFor="name" className="block text-sm font-medium indent-2">Adınız Soyadınız</label>
                       <input type="text" id="name" name="name" required
                              className="indent-2 w-full border-b-1 border-primary focus:outline-none focus:border-secondary" />
                   </div>
-                  <div className="w-full max-w-[400px]">
+                  <div className="w-full md:max-w-[400px]">
                     <label htmlFor="phone" className="block text-sm font-medium indent-2">Telefon</label>
                     <input type="tel" id="phone" name="phone" required pattern="[0-9]{10,15}" placeholder="123 456 78 90"
                              className="indent-2 w-full border-b-1 border-primary focus:outline-none focus:border-secondary" />
                   </div>
-                  <div className="w-full max-w-[400px]">
+                  <div className="w-full md:max-w-[400px]">
                       <label htmlFor="email" className="block text-sm font-medium indent-2">E-posta</label>
                       <input type="email" id="email" name="email" required
                          className="indent-2 w-full border-b-1 border-primary focus:outline-none focus:border-secondary" />
                   </div>
-                  <div className="w-full max-w-[400px]">
+                  <div className="w-full md:max-w-[400px]">
                       <label htmlFor="message" className="block text-sm font-medium indent-2 ">Mesajınız</label>
                       <textarea id="message" name="message" rows={5} required
                                 className="indent-2 w-full border-1 border-primary focus:outline-none focus:border-secondary pt-2" />
                   </div>
-                  <button type="submit" className="w-full max-w-[400px] bg-primary text-white font-semibold py-3 hover:bg-secondary transition-all cursor-pointer">Gönder</button>
+                  <button type="submit" className="w-full md:max-w-[400px] bg-primary text-white font-semibold py-3 hover:bg-secondary transition-all cursor-pointer">Gönder</button>
               </form>
           </div>
           <div className="flex flex-col gap-4 rounded-md overflow-hidden border-1 border-gray-300">
-            <iframe
-              title="Harita"
-              src="https://www.google.com/maps?q=Müftü+Mahallesi+Atatürk+Caddesi+Rize+Adliyesi+Karşısı+No:616/1+Merkez+Rize&output=embed"
-              width="100%"
-              height="100%"
-            ></iframe>
+            <div className="w-full aspect-video min-h-[240px] md:min-h-[360px]">
+              <iframe
+                title="Harita"
+                src="https://www.google.com/maps?q=Müftü+Mahallesi+Atatürk+Caddesi+Rize+Adliyesi+Karşısı+No:616/1+Merkez+Rize&output=embed"
+                width="100%"
+                height="100%"
+              ></iframe>
+            </div>
             <p className="text-center"><strong>Adres:</strong><br/> Müftü Mahallesi Atatürk Caddesi No:616/1 <br/> (Rize Adliyesi Karşısı) <br/> Merkez/Rize</p>
           </div>
         </div>

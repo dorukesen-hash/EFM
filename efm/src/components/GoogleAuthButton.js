@@ -2,16 +2,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signIn } from 'next-auth/react';
 import { toast } from 'react-toastify';
 
 import { useAuth } from '../utils/context/AuthContext';
-import { updateUserContext } from '../utils/context/updateUserContext';
 
 export default function GoogleAuthButton({ actionType = 'login', setMessage }) {
   const [loading, setLoading] = useState(false);
   const [firebaseReady, setFirebaseReady] = useState(false);
-  const { setUser } = useAuth();
 
   useEffect(() => {
     setFirebaseReady(true);
@@ -21,25 +19,8 @@ export default function GoogleAuthButton({ actionType = 'login', setMessage }) {
     setLoading(true);
     setMessage && setMessage('');
     try {
-      const auth = getAuth(); // app parametresi olmadan çağırmak daha güvenli
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
-      const res = await fetch('/api/auth/google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMessage && setMessage('Google ile giriş başarılı!');
-        toast.success('Google ile giriş başarılı!');
-        // Context'i güncelle
-        await updateUserContext(setUser);
-      } else {
-        setMessage && setMessage(data.error || 'Bir hata oluştu.');
-        toast.error(data.error || 'Bir hata oluştu.');
-      }
+      await signIn('google');
+      setMessage && setMessage('Google ile giriş başlatıldı.');
     } catch (err) {
       setMessage && setMessage('Google ile giriş başarısız.');
       toast.error('Google ile giriş başarısız.');

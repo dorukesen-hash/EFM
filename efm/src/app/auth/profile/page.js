@@ -3,16 +3,15 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { getAuth, signOut } from 'firebase/auth';
+import { signOut } from 'next-auth/react';
 
 import { useAuth } from '../../../utils/context/AuthContext';
-import app from '../../../services/firebase/firebaseConfig';
 import SampleButton from "../../../components/SampleButton";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function ProfilePage() {
-  const { user, loading, setUser } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -23,13 +22,12 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     try {
-      const auth = getAuth(app);
-      await signOut(auth);
-      await fetch('/api/auth/logout', { method: 'POST' });
-      setUser(null);
-      toast.success('Başarıyla çıkış yapıldı!');
-      router.replace('/auth/login');
+      await signOut({
+        redirect: true,
+        callbackUrl: '/auth/login'
+      });
     } catch (err) {
+      console.error('Logout error:', err);
       toast.error('Çıkış sırasında bir hata oluştu!');
     }
   };
@@ -49,17 +47,14 @@ export default function ProfilePage() {
           <SampleButton/>
           <div className="w-full flex flex-col gap-4">
             <div>
-              <span className="font-semibold">Ad Soyad:</span> {user.displayName || '-'}
+              <span className="font-semibold">Ad Soyad:</span> {user.name || '-'}
             </div>
             <div>
               <span className="font-semibold">Email:</span> {user.email}
             </div>
-            <div>
-              <span className="font-semibold">Kullanıcı ID:</span> {user.uid}
-            </div>
-            {user.photoURL && (
+            {user.image && (
                 <div className="flex flex-col items-center mt-4">
-                  <Image src={user.photoURL} alt="Profil Fotoğrafı" width={24} height={24} className="w-24 h-24 rounded-full border" />
+                  <Image src={user.image} alt="Profil Fotoğrafı" width={24} height={24} className="w-24 h-24 rounded-full border" />
                 </div>
             )}
             <div className="mt-6 text-sm text-gray-500">Bu sayfada profil bilgilerinizi görüntüleyebilirsiniz.</div>

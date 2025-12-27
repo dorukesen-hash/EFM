@@ -97,15 +97,13 @@ export default function Areas() {
     ];
 
     return (
-        <section className="max-w-[1440px]
-
-        w-full page-container flex flex-col items-center justify-center text-primary pt-20 md:pt-30 pb-16 md:pb-20 bg-foreground">
+        <section className="max-w-[1440px] w-full page-container flex flex-col items-center justify-center text-primary pt-20 md:pt-30 pb-16 md:pb-20 bg-foreground">
             <h2 className="text-4xl font-bold mb-10">Çalışma Alanlarımız</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                 {areas.map((area, idx) => (
                     <div
                         key={area.title}
-                        className="group h-[100px] md:h-[240px] relative flex w-full aspect-[4/3] sm:aspect-[9/8] md:aspect-[9/7] lg:aspect-[9/7] flex-col items-center justify-center text-center shadow-xl overflow-hidden rounded-md transition-all duration-500 md:hover:scale-105 md:hover:shadow-2xl"
+                        className="group relative flex w-full h-[100px] sm:h-[360px] flex-col items-center justify-end text-center shadow-xl overflow-hidden rounded-md transition-all duration-500 md:hover:scale-105 md:hover:shadow-2xl"
                     >
                         <div className="absolute inset-0 z-0 transition-all duration-500 grayscale-60 md:group-hover:grayscale-0">
                             <Image
@@ -117,14 +115,27 @@ export default function Areas() {
                                 className="object-cover object-center w-full h-full rounded-md"
                             />
                         </div>
-                        {/* Mobil: başlık üzerine arka plan, Desktop: alt panel */}
+
+                        {/* Mobil: başlık ortada yarı saydam arka planla */}
                         <div className="sm:hidden absolute inset-0 flex items-center justify-center z-10">
                             <div className="absolute inset-0 bg-black/40 z-0"></div>
                             <h3 className="text-base font-bold w-full px-3 py-2 text-center text-white relative z-10">{area.title}</h3>
                         </div>
-                        <div className="hidden sm:flex w-full flex-col items-center bg-foreground/95 backdrop-blur-sm z-10 border-t-1 border-secondary min-h-[60px] transition-all duration-500">
-                            <h3 className="text-lg font-bold w-full py-4">{area.title}</h3>
-                            <p className="text-sm px-4 pb-4 max-h-0 md:group-hover:max-h-[200px] md:group-hover:py-2 overflow-hidden transition-all duration-500 ease-in-out">{area.description}</p>
+
+                        {/* Tablet ve Desktop: alt panel hover efektli */}
+                        <div className="hidden sm:flex h-[180px] w-full flex-col items-center bg-foreground/95 backdrop-blur-sm z-10 border-t-1 border-secondary transition-all duration-500 ease-in-out md:group-hover:bg-foreground/98">
+                            {/* Başlık - her zaman görünür */}
+                            <h3 className="text-lg font-bold w-full py-3 px-4 transition-all duration-500">{area.title}</h3>
+
+                            {/* Kısa açıklama - normal durumda 3-4 satır görünür */}
+                            <div className="w-full px-4 overflow-hidden transition-all duration-500 md:max-h-[60px] md:group-hover:max-h-[200px]">
+                                <p className="text-sm pb-2 line-clamp-3 md:group-hover:line-clamp-none transition-all duration-500">{area.description}</p>
+                            </div>
+
+                            {/* Tarih - hover'da görünür */}
+                            <div className="w-full px-4 pb-3 transition-all duration-500 opacity-0 max-h-0 md:group-hover:opacity-100 md:group-hover:max-h-[40px] overflow-hidden">
+                                <p className="text-xs text-primary/70 italic">Güncelleme: {new Date().toLocaleDateString('tr-TR')}</p>
+                            </div>
                         </div>
                     </div>
                 ))}

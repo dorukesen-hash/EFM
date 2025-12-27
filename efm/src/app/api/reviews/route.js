@@ -1,29 +1,97 @@
 import { NextResponse } from "next/server";
-import { google } from "googleapis";
+import { refreshAccessToken } from '../../../services/google/gbpOAuth';
+import { getGbpOAuthConfig } from '../../../services/firestore/firestore';
 
-const serviceAccount = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
 const businessAccountId = process.env.GOOGLE_BUSINESS_ACCOUNT_ID;
 const locationId = process.env.GOOGLE_BUSINESS_LOCATION_ID;
 
-export async function GET() {
-  try {
-    // if (!serviceAccount || !businessAccountId || !locationId) {
-    //   return NextResponse.json(
-    //     { error: "API kimlik bilgileri eksik." },
-    //     { status: 400 }
-    //   );
-    // }
+function normalizeReviewsPayload(payload) {
+  const reviews = payload?.reviews || payload?.locationReviews || [];
+  const nextPageToken = payload?.nextPageToken || "";
+  return { reviews, nextPageToken };
+}
 
-    // const auth = new google.auth.GoogleAuth({
-    //   credentials: JSON.parse(serviceAccount),
-    //   scopes: ["https://www.googleapis.com/auth/business.manage"],
-    // });
-    // const mybusiness = google.mybusiness({ version: "v4", auth });
-    // const parent = `accounts/${businessAccountId}/locations/${locationId}`;
-    // const res = await mybusiness.accounts.locations.reviews.list({ parent });
-    // return NextResponse.json(res.data);
+export async function GET(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const limitParam = searchParams.get('limit');
+    const limit = limitParam ? Math.max(1, Math.min(50, Number(limitParam))) : null;
+
+    const isDevelopment = !businessAccountId || !locationId ||
+      businessAccountId === 'your_account_id_here' ||
+      locationId === 'your_location_id_here';
+
+    if (isDevelopment) {
+      const mock = getMockReviews();
+      if (limit) mock.reviews = mock.reviews.slice(0, limit);
+      return NextResponse.json(mock, { headers: { 'Cache-Control': 'no-store' } });
+    }
+
+    // OAuth config yoksa mock'a düş (kurulum tamamlanana kadar site boş kalmasın)
+    const cfg = await getGbpOAuthConfig();
+    if (!cfg?.refreshToken) {
+      const mock = getMockReviews();
+      if (limit) mock.reviews = mock.reviews.slice(0, limit);
+      return NextResponse.json(mock, { headers: { 'Cache-Control': 'no-store' } });
+    }
+
+    const accessToken = await refreshAccessToken(cfg.refreshToken);
+
+    const response = await fetch(
+      `https://mybusiness.googleapis.com/v4/accounts/${businessAccountId}/locations/${locationId}/reviews`,
+      {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`API isteği başarısız: ${response.status} ${response.statusText}`);
+    }
+
+    const raw = await response.json();
+    const { reviews: rawReviews, nextPageToken } = normalizeReviewsPayload(raw);
+    const reviews = limit ? rawReviews.slice(0, limit) : rawReviews;
+
+    const averageRating = reviews.length > 0
+      ? reviews.reduce((sum, review) => sum + getNumericRating(review.starRating), 0) / reviews.length
+      : 0;
 
     return NextResponse.json({
+      reviews,
+      averageRating: averageRating.toFixed(1),
+      totalReviewCount: reviews.length,
+      nextPageToken,
+    }, {
+      headers: {
+        'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+      }
+    });
+  } catch (error) {
+    console.error("Reviews API hatası:", error);
+    return NextResponse.json(
+      { error: "Yorumlar yüklenirken bir hata oluştu." },
+      { status: 500 }
+    );
+  }
+}
+
+// Yıldız derecelendirmesini sayıya çevir
+function getNumericRating(starRating) {
+  const ratingMap = {
+    'FIVE': 5,
+    'FOUR': 4,
+    'THREE': 3,
+    'TWO': 2,
+    'ONE': 1,
+  };
+  return ratingMap[starRating] || 0;
+}
+
+// Test/Mock verileri
+function getMockReviews() {
+  return {
       reviews: [
         {
           name: "Google Kullanıcısı",
@@ -182,11 +250,5 @@ export async function GET() {
       averageRating: 3.8,
       totalReviewCount: 5,
       nextPageToken: "",
-    });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "İç sunucu hatası." },
-      { status: 500 }
-    );
-  }
+    };
 }

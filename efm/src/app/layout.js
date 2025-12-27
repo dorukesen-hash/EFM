@@ -1,7 +1,8 @@
 import "./globals.css";
 import 'react-toastify/dist/ReactToastify.css';
-import { AuthProvider } from '../utils/context/AuthContext';
 import React from 'react';
+import AuthSessionProvider from "./providers/AuthProvider";
+import { AuthProvider } from '../utils/context/AuthContext';
 import ClientLayout from "../components/ClientLayout";
 
 
@@ -20,9 +21,11 @@ export default function RootLayout({ children }) {
         <title>{metadata.title}</title>
       </head>
       <body className="bg-background text-primary relative min-h-screen">
-        <AuthProvider>
-          <ClientLayout>{children}</ClientLayout>
-        </AuthProvider>
+        <AuthSessionProvider>
+          <AuthProvider>
+            <ClientLayout>{children}</ClientLayout>
+          </AuthProvider>
+        </AuthSessionProvider>
       </body>
     </html>
   );

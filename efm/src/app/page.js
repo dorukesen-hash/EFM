@@ -18,13 +18,13 @@ export default function HomePage() {
         priority
         className="w-full h-full fixed top-0 left-0 -z-50"
       />
-      <Hero />
-      <Bio />
-      <Reviews />
-        <Services />
-        <Values/>
-        <Areas/>
-        <Blog/>
+       <Hero />
+       <Bio />
+       <Reviews />
+       <Services />
+       <Values/>
+       <Areas/>
+       <Blog/>
     </main>
   );
 }

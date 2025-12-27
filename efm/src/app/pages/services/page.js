@@ -64,10 +64,10 @@ export default function ServicesPage() {
 				</nav>
 				{/* Sağ İçerik */}
 				<section className="flex-1 p-6 md:p-8 flex flex-col justify-start">
-					<h2 className="text-2xl font-bold mb-4 text-primary">
+					<h2 className="text-xl md:text-2xl font-bold mb-4 text-primary">
 						{selectedService.title}
 					</h2>
-					<p className="text-lg leading-relaxed">
+					<p className="text-base md:text-lg leading-relaxed text-justify">
 						{selectedService.description}
 					</p>
 				</section>

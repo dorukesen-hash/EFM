@@ -1,4 +1,5 @@
 "use client";
+import React from 'react';
 import { ToastContainer } from 'react-toastify';
 import { usePathname } from 'next/navigation';
 
@@ -6,7 +7,7 @@ import { Whatsapp } from "./Whatsapp";
 import Navbar from './Navbar';
 import Footer from "./Footer";
 
-export default function ClientLayout({ children }) {
+function ClientLayout({ children }) {
   const pathname = usePathname();
   const showHeader = !pathname.startsWith('/admin');
   return (
@@ -20,3 +21,4 @@ export default function ClientLayout({ children }) {
   );
 }
 
+export default React.memo(ClientLayout);

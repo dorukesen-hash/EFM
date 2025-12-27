@@ -1,45 +1,31 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import React, { createContext, useContext, useEffect, useRef, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
 
-const AuthContext = createContext({ user: null, loading: true });
+const AuthContext = createContext({ user: null, loading: true, setUser: () => {} });
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession();
+  const user = session?.user || null;
+  const loading = status === 'loading';
+  const sessionLoadedRef = useRef(false);
 
+  // İlk yüklemede oturum varsa bilgilendir (bir kez)
   useEffect(() => {
-    let firstLoad = true;
-    async function checkSession() {
-      setLoading(true);
-      try {
-        const res = await fetch('/api/auth/session', { credentials: 'include' });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.user) {
-            setUser(prev => {
-              if (!prev && firstLoad) {
-                toast.info('Oturumunuz otomatik olarak yüklendi.');
-              }
-              return data.user;
-            });
-          } else {
-            setUser(null);
-          }
-        } else {
-          setUser(null);
-        }
-      } catch {
-        setUser(null);
-      }
-      setLoading(false);
-      firstLoad = false;
+    if (!loading && user && !sessionLoadedRef.current) {
+      sessionLoadedRef.current = true;
     }
-    checkSession();
-  }, []);
+  }, [user, loading]);
+
+  // Context value'yu memoize et - gereksiz re-render'ları engelle
+  const contextValue = useMemo(() => ({
+    user,
+    loading,
+    setUser: () => {}
+  }), [user, loading]);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

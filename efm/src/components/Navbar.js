@@ -1,12 +1,12 @@
 "use client";
+import React from 'react';
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from 'react-toastify';
-import { getAuth, signOut } from "firebase/auth";
-import { useState } from 'react';
+import { signOut } from 'next-auth/react';
+import { useState, useEffect, useRef, useMemo, memo } from 'react';
 
 import { useAuth } from '../utils/context/AuthContext';
-import app from "../services/firebase/firebaseConfig";
 import icon from "../assets/lady.png";
 
 const pageLinks = [
@@ -19,17 +19,110 @@ const pageLinks = [
   { href: "/pages/services", label: "Hizmetler" },
 ];
 
-export default function Navbar() {
-  const { user, setUser, loading } = useAuth();
-  const [open, setOpen] = useState(false);
+// User section'ı ayrı bileşen - sadece user değiştiğinde render olur
+const UserSection = memo(({ user, loading, onLogout }) => {
+  if (loading) {
+    return <div className="w-[120px] h-6 bg-gray-200 rounded animate-pulse" />;
+  }
 
-  const handleLogout = async () => {
-    const auth = getAuth(app);
-    await signOut(auth);
-    await fetch("/api/auth/logout", { method: "POST" });
-    setUser(null);
-    toast.info("Başarıyla çıkış yaptınız.");
-  };
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <>
+      <span className="ml-2 text-secondary font-semibold capitalize hidden lg:inline">
+        Hoşgeldin {user?.name || user?.email}
+      </span>
+      <Link
+        href="/auth/profile"
+        className="capitalize whitespace-nowrap h-full flex items-center justify-center px-4 lg:px-6 border-b-4 border-transparent hover:border-secondary transition-colors duration-300 hover:bg-white/10"
+      >
+        Profil
+      </Link>
+      <button
+        onClick={onLogout}
+        className="whitespace-nowrap h-full flex items-center justify-center px-4 lg:px-6 border-b-4 border-transparent hover:border-secondary transition-colors duration-300 hover:bg-white/10 cursor-pointer"
+      >
+        Çıkış Yap
+      </button>
+    </>
+  );
+});
+
+UserSection.displayName = 'UserSection';
+
+// Mobile User section
+const MobileUserSection = memo(({ user, loading, onLogout, onLinkClick }) => {
+  if (loading) {
+    return <div className="w-28 h-5 bg-white/40 rounded" />;
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <>
+      <span className="text-secondary font-semibold">
+        Hoşgeldin {user?.name || user?.email}
+      </span>
+      <Link href="/auth/profile" onClick={onLinkClick} className="py-2 px-2 rounded hover:bg-white/10">
+        Profil
+      </Link>
+      <button onClick={onLogout} className="text-left py-2 px-2 rounded hover:bg-white/10 cursor-pointer">
+        Çıkış Yap
+      </button>
+    </>
+  );
+});
+
+MobileUserSection.displayName = 'MobileUserSection';
+
+function Navbar() {
+  const { user, loading } = useAuth();
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        open &&
+        menuRef.current &&
+        buttonRef.current &&
+        !menuRef.current.contains(event.target) &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
+
+  const handleLogout = useMemo(() => async () => {
+    try {
+      setOpen(false);
+      await signOut({
+        redirect: true,
+        callbackUrl: '/'
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error("Çıkış sırasında bir hata oluştu.");
+    }
+  }, []);
+
+  const handleLinkClick = useMemo(() => () => {
+    setOpen(false);
+  }, []);
 
   return (
     <>
@@ -55,7 +148,7 @@ export default function Navbar() {
             <a href="tel:+905339490553" className="text-right px-2 py-1 hover:text-secondary hover:font-bold transition">Ofis: 0533 949 05 53</a>
             <a href="mailto:info@enverfurkanmete.av.tr" className="text-right px-2 py-1 hover:text-secondary hover:font-bold transition">Eposta: info@enverfurkanmete.av.tr</a>
           </div>
-          <Link href="/pages/contact" className="bg-secondary text-white font-bold px-5 py-2 rounded-sm hover:bg-primary transition-colors">Hukuki Yardım Al</Link>
+          <Link href="/pages/contact" className="bg-secondary text-white font-bold px-5 py-2 rounded-sm hover:bg-primary transition-colors text-center">Hukuki Yardım Al</Link>
         </div>
       </div>
 
@@ -67,8 +160,9 @@ export default function Navbar() {
             <span className="font-semibold text-sm">Av. Enver Furkan METE</span>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/pages/contact" className="hidden sm:inline-block bg-secondary text-white text-xs font-semibold px-3 py-1 rounded-sm">Yardım</Link>
+            <Link href="/pages/contact" className="hidden sm:inline-flex bg-secondary text-white text-xs font-semibold px-3 py-1 rounded-sm items-center justify-center">Yardım</Link>
             <button
+              ref={buttonRef}
               aria-label="Menüyü aç/kapat"
               aria-controls="mobile-menu"
               aria-expanded={open}
@@ -82,26 +176,21 @@ export default function Navbar() {
           </div>
         </div>
         {open && (
-          <div id="mobile-menu" className="px-4 pb-3 pt-2 bg-primary text-white space-y-2">
+          <div ref={menuRef} id="mobile-menu" className="px-4 pb-3 pt-2 bg-primary text-white space-y-2">
             <nav className="flex flex-col">
               {pageLinks.map((link) => (
-                <Link key={link.href} href={link.href} className="py-2 px-2 rounded hover:bg-white/10">
+                <Link key={link.href} href={link.href} onClick={handleLinkClick} className="py-2 px-2 rounded hover:bg-white/10">
                   {link.label}
                 </Link>
               ))}
             </nav>
             <div className="pt-2 flex flex-col gap-1">
-              {loading ? (
-                <div className="w-28 h-5 bg-white/40 rounded" />
-              ) : !user ? (
-                <></>
-              ) : (
-                <>
-                  <span className="text-secondary font-semibold">Hoşgeldin {user?.displayName || user?.email}</span>
-                  <Link href="/auth/profile" className="py-2 px-2 rounded hover:bg-white/10">Profil</Link>
-                  <button onClick={handleLogout} className="text-left py-2 px-2 rounded hover:bg-white/10 cursor-pointer">Çıkış Yap</button>
-                </>
-              )}
+              <MobileUserSection
+                user={user}
+                loading={loading}
+                onLogout={handleLogout}
+                onLinkClick={handleLinkClick}
+              />
             </div>
           </div>
         )}
@@ -121,27 +210,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {loading ? (
-              <div className="w-[120px] h-6 bg-gray-200 rounded animate-pulse" />
-            ) : !user ? (
-              <></>
-            ) : (
-              <>
-                <span className="ml-2 text-secondary font-semibold capitalize hidden lg:inline">Hoşgeldin {user?.displayName || user?.email}</span>
-                <Link
-                  href="/auth/profile"
-                  className="capitalize whitespace-nowrap h-full flex items-center justify-center px-4 lg:px-6 border-b-4 border-transparent hover:border-secondary transition-colors duration-300 hover:bg-white/10"
-                >
-                  Profil
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="whitespace-nowrap h-full flex items-center justify-center px-4 lg:px-6 border-b-4 border-transparent hover:border-secondary transition-colors duration-300 hover:bg-white/10 cursor-pointer"
-                >
-                  Çıkış Yap
-                </button>
-              </>
-            )}
+            <UserSection user={user} loading={loading} onLogout={handleLogout} />
           </div>
         </div>
 
@@ -164,3 +233,5 @@ export default function Navbar() {
     </>
   );
 }
+
+export default memo(Navbar);

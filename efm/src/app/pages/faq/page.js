@@ -49,52 +49,52 @@ export default function FaqPage() {
 
     return (
         <div className="bg-background text-primary flex flex-col items-center min-h-screen">
-            <section className="max-w-[1440px] w-full bg-foreground text-primary py-24 border-b-1 border-secondary">
-                <div className="container mx-auto px-4 flex items-center justify-center flex-col">
-                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+            <section className="max-w-[1440px] w-full bg-foreground text-primary py-16 md:py-24 border-b-1 border-secondary">
+                <div className="container mx-auto px-3 md:px-4 flex items-center justify-center flex-col">
+                    <h1 className="text-3xl md:text-6xl font-bold tracking-tight mb-2 md:mb-4">
                         Sıkça Sorulan Sorular
                     </h1>
                 </div>
             </section>
-                <div className="flex flex-col gap-6 w-full max-w-[1440px] mx-auto p-8">
-                    {faq.map((item, idx) => (
-                        <div
-                            key={item.question}
-                            className="overflow-hidden transition-all duration-300 border-1 border-transparent "
+            <div className="flex flex-col gap-4 md:gap-6 w-full max-w-[1440px] mx-auto p-4 md:p-8">
+                {faq.map((item, idx) => (
+                    <div
+                        key={item.question}
+                        className="overflow-hidden transition-all duration-300 border-1 border-transparent "
+                    >
+                        <button
+                            className={`flex items-center w-full px-4 py-3 md:px-6 md:py-4 text-left transition-colors ${openIdxs.includes(idx) ? 'bg-primary text-white' : 'bg-foreground text-primary'} cursor-pointer`}
+                            onClick={() => {
+                                setOpenIdxs((prev) =>
+                                    prev.includes(idx)
+                                        ? prev.filter((i) => i !== idx)
+                                        : [...prev, idx]
+                                );
+                            }}
+                            aria-expanded={openIdxs.includes(idx)}
                         >
-                            <button
-                                className={`flex items-center w-full px-6 py-4 text-left transition-colors ${openIdxs.includes(idx) ? 'bg-primary text-white' : 'bg-foreground text-primary'} cursor-pointer`}
-                                onClick={() => {
-                                    setOpenIdxs((prev) =>
-                                        prev.includes(idx)
-                                            ? prev.filter((i) => i !== idx)
-                                            : [...prev, idx]
-                                    );
-                                }}
-                                aria-expanded={openIdxs.includes(idx)}
+                            <span className="font-semibold text-base md:text-lg flex-1">{item.question}</span>
+                            <svg
+                                className={`w-4 h-4 md:w-5 md:h-5 ml-2 transform transition-transform duration-300 ${openIdxs.includes(idx) ? 'rotate-180' : ''}`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
                             >
-                                <span className="font-semibold text-lg flex-1">{item.question}</span>
-                                <svg
-                                    className={`w-5 h-5 ml-2 transform transition-transform duration-300 ${openIdxs.includes(idx) ? 'rotate-180' : ''}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div
-                                className={`border-x-1 border-b-1 border-secondary transition-all duration-800 ease-in-out px-4 text-justify ${openIdxs.includes(idx) ? 'max-h-40 py-10 opacity-100' : 'max-h-0 py-0 opacity-0'} overflow-hidden text-primary`}
-                                style={{
-                                    transitionProperty: 'max-height, opacity, padding',
-                                }}
-                            >
-                                <p>{item.answer}</p>
-                            </div>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div
+                            className={`border-x-1 border-b-1 border-secondary transition-all duration-500 ease-in-out px-3 md:px-4 text-justify ${openIdxs.includes(idx) ? 'max-h-[1000px] py-6 md:py-10 opacity-100' : 'max-h-0 py-0 opacity-0'} overflow-hidden text-primary text-sm md:text-base`}
+                            style={{
+                                transitionProperty: 'max-height, opacity, padding',
+                            }}
+                        >
+                            <p>{item.answer}</p>
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
+            </div>
 
         </div>
     );

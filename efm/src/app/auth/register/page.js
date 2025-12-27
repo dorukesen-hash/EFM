@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import { signIn } from 'next-auth/react';
 
 import GoogleAuthButton from '../../../components/GoogleAuthButton';
 import { useAuth } from '../../../utils/context/AuthContext';
-import { updateUserContext } from '../../../utils/context/updateUserContext';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -15,11 +15,12 @@ export default function RegisterPage() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { user, loading: authLoading, setUser } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace('/auth/profile');
+      const timer = setTimeout(() => router.replace('/auth/profile'), 500);
+      return () => clearTimeout(timer);
     }
   }, [user, authLoading, router]);
 
@@ -28,23 +29,23 @@ export default function RegisterPage() {
     setMessage('');
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name }),
+      const res = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+        name,
+        mode: 'register',
       });
-      const data = await res.json();
-      if (res.ok) {
-        setMessage('Kayıt başarılı! Giriş yapabilirsiniz.');
-        toast.success('Kayıt başarılı! Giriş yapabilirsiniz.');
+      if (res?.error) {
+        setMessage(res.error || 'Bir hata oluştu.');
+        toast.error(res.error || 'Bir hata oluştu.');
+      } else if (res?.ok) {
+        setMessage('Kayıt başarılı!');
+        toast.success('Kayıt başarılı!');
         setEmail('');
         setPassword('');
         setName('');
-        await updateUserContext(setUser);
-        setTimeout(() => router.push('/'), 1000);
-      } else {
-        setMessage(data.error || 'Bir hata oluştu.');
-        toast.error(data.error || 'Bir hata oluştu.');
+        setTimeout(() => router.push('/'), 500);
       }
     } catch (err) {
       setMessage('Bir hata oluştu.');

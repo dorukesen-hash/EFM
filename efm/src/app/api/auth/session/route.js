@@ -1,44 +1,62 @@
 import { NextResponse } from 'next/server';
-import admin from '../../../../services/firebase/firebaseAdmin';
+import { getToken } from 'next-auth/jwt';
+import { getUserByEmail, getUserFromFirestore } from '../../../../services/firestore/firestore';
 
 export async function GET(req) {
   try {
-    // Cookie'den custom token'ı al
-    const cookie = req.headers.get('cookie') || '';
-    const match = cookie.match(/session=([^;]+)/);
-    if (!match) {
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    if (!token) {
       return NextResponse.json({ user: null }, { status: 200 });
     }
-    const customToken = match[1];
-    // Custom token ile kullanıcıyı doğrula
-    // Not: Custom token'ı verifyIdToken ile doğrulamak mümkün değildir, sadece client'ta signInWithCustomToken ile kullanılabilir.
-    // Burada örnek olarak, custom token'ın base64 payload'ını decode edip uid çekmeye çalışıyoruz (güvenli değildir, prod için uygun değil)
-    // En iyi yöntem: client'ta idToken ile oturum yönetmek ve burada idToken'ı verifyIdToken ile doğrulamaktır.
-    // Şimdilik, custom token'ı decode etmeye çalışalım:
-    const base64Payload = customToken.split('.')[1];
-    if (!base64Payload) return NextResponse.json({ user: null }, { status: 200 });
-    const payload = JSON.parse(Buffer.from(base64Payload, 'base64').toString('utf-8'));
-    const uid = payload.uid;
-    if (!uid) return NextResponse.json({ user: null }, { status: 200 });
-    // Kullanıcıyı Firestore'dan veya Firebase'den çek
-    const userRecord = await admin.auth().getUser(uid);
-    // Firestore'dan isAdmin bilgisini çek
-    const db = admin.firestore();
-    const userDoc = await db.collection('users').doc(uid).get();
-    let isAdmin = false;
-    if (userDoc.exists) {
-      isAdmin = userDoc.data().isAdmin || false;
+
+    const email = token.email || null;
+    const tokenUid = token.id || token.sub || null;
+
+    // Canonical user: tercihen email ile users/{firebaseUid} dokümanını bul
+    let profile = null;
+    if (email) {
+      profile = await getUserByEmail(email);
     }
+
+    // Email ile bulunamadıysa token uid ile dene
+    if (!profile && tokenUid) {
+      profile = await getUserFromFirestore(tokenUid);
+      if (profile) profile = { uid: tokenUid, ...profile };
+    }
+
+    const uid = profile?.uid || tokenUid;
+
     return NextResponse.json({
       user: {
-        uid: userRecord.uid,
-        email: userRecord.email,
-        displayName: userRecord.displayName,
-        photoURL: userRecord.photoURL || null,
-        isAdmin,
-      }
+        uid: uid || null,
+        email: profile?.email || email,
+        displayName: profile?.displayName || token.name || null,
+        photoURL: profile?.photoURL || token.picture || null,
+        isAdmin: profile?.isAdmin || token.isAdmin || false,
+      },
     }, { status: 200 });
-  } catch (error) {
+  } catch (err) {
+    console.error('Session GET error:', err);
     return NextResponse.json({ user: null }, { status: 200 });
   }
+}
+
+// POST endpoint artık kullanılmıyor (NextAuth tarafından yönetiliyor)
+export async function POST(_req) {
+  return NextResponse.json(
+    { error: 'Bu endpoint NextAuth tarafından yönetiliyor. Lütfen signIn() kullanın.' },
+    { status: 410 }
+  );
+}
+
+// DELETE endpoint artık kullanılmıyor (NextAuth signOut tarafından yönetiliyor)
+export async function DELETE(_req) {
+  return NextResponse.json(
+    { error: 'Bu endpoint NextAuth tarafından yönetiliyor. Lütfen signOut() kullanın.' },
+    { status: 410 }
+  );
 }

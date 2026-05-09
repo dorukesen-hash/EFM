@@ -1,40 +1,80 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import reviewsData from "../../../public/reviewsSorted.json";
+
+// Tarih formatını "bugün", "dün", "x hafta önce" gibi göster
+const formatRelativeTime = (dateString) => {
+	if (!dateString) return "";
+
+	const date = new Date(dateString);
+	const now = new Date();
+
+	// Milisaniye farkı
+	const diffMs = now - date;
+	const diffSecs = Math.floor(diffMs / 1000);
+	const diffMins = Math.floor(diffSecs / 60);
+	const diffHours = Math.floor(diffMins / 60);
+	const diffDays = Math.floor(diffHours / 24);
+
+	// Yıl ve ay farkını daha doğru hesapla
+	const yearsDiff = now.getFullYear() - date.getFullYear();
+	const monthsDiff = now.getMonth() - date.getMonth();
+	const totalMonths = yearsDiff * 12 + monthsDiff;
+
+	// Saniye/Dakika/Saat
+	if (diffSecs < 60) return "az önce";
+	if (diffMins < 60) return `${diffMins} dakika önce`;
+	if (diffHours < 24) return `${diffHours} saat önce`;
+
+	// Gün
+	if (diffDays === 0) return "bugün";
+	if (diffDays === 1) return "dün";
+	if (diffDays < 7) return `${diffDays} gün önce`;
+
+	// Hafta (4 haftadan az)
+	const diffWeeks = Math.floor(diffDays / 7);
+	if (diffWeeks === 1) return "bu hafta";
+	if (diffWeeks < 4) return `${diffWeeks} hafta önce`;
+
+	// Ay (12 aydan az) - toplam ay sayısını kullan
+	if (totalMonths === 1) return "bir ay önce";
+	if (totalMonths > 0 && totalMonths < 12) return `${totalMonths} ay önce`;
+
+	// Yıl - tam yıl sayısını kontrol et
+	const fullYears = Math.floor(totalMonths / 12);
+	if (fullYears === 1) return "bir yıl önce";
+	if (fullYears > 1) return `${fullYears} yıl önce`;
+
+	// Fallback
+	return `${totalMonths} ay önce`;
+};
 
 export default function Reviews() {
-	const [data, setData] = useState(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
-	const [page, setPage] = useState(0);
+	const data = reviewsData;
+	const reviews = Array.isArray(data.reviews) ? data.reviews : [];
+	const scrollRef = useRef(null);
 
 	useEffect(() => {
-		fetch("/api/reviews?limit=30")
-			.then((res) => res.json())
-			.then((json) => {
-				setData(json);
-				setLoading(false);
-			})
-			.catch((err) => {
-				setError("Yorumlar alınamadı.");
-				console.log(err);
-				setLoading(false);
-			});
+		const el = scrollRef.current;
+		if (!el) return;
+
+		const onWheel = (event) => {
+			if (el.scrollWidth <= el.clientWidth) return;
+
+			const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY)
+				? event.deltaX
+				: event.deltaY;
+			if (delta !== 0) {
+				event.preventDefault();
+				el.scrollLeft += delta;
+			}
+		};
+
+		el.addEventListener("wheel", onWheel, { passive: false });
+		return () => el.removeEventListener("wheel", onWheel);
 	}, []);
-
-	if (loading)
-		return <div className="text-center py-12">Yükleniyor...</div>;
-	if (error)
-		return (
-			<div className="text-center py-12 text-red-500">{error}</div>
-		);
-	if (!data || !data.reviews) return null;
-
-	const pageSize = 3;
-	const reviews = Array.isArray(data.reviews) ? data.reviews : [];
-	const pageCount = Math.max(1, Math.ceil(reviews.length / pageSize));
-	const currentReviews = reviews.slice(page * pageSize, (page + 1) * pageSize);
 
 	return (
 		<section className="max-w-[1440px] w-full page-container flex flex-col items-center justify-center text-primary backdrop-blur-sm pt-20 md:pt-30 pb-16 md:pb-20 bg-white/25">
@@ -42,76 +82,72 @@ export default function Reviews() {
 			<div className="mb-6 md:mb-8 text-base md:text-lg text-primary text-center">
 				Ortalama Puan: {data.averageRating} / 5
 			</div>
-			<div className="flex flex-col justify-between w-full">
-				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-					{currentReviews.map((review, idx) => {
-						const reviewerName = review?.reviewer?.displayName || "Google Kullanıcısı";
-						const reviewerPhoto = review?.reviewer?.profilePhotoUrl || "/vercel.svg";
-						const createdAt = review?.createTime ? new Date(review.createTime) : null;
+
+			<div
+				ref={scrollRef}
+				className="w-full overflow-x-auto reviews-scroll"
+			>
+				<div className="flex h-full gap-4 md:gap-6 pb-4 ">
+					{reviews.map((review, idx) => {
+						const reviewerName = review?.displayName || "Google Kullanıcısı";
+						const reviewerPhoto = review?.profilePhotoUrl;
+						const relativeTime = formatRelativeTime(review?.createTime);
 						const comment = review?.comment || "";
+						const totalReviewCount = review?.totalReviewCount || 0;
 
 						return (
-							<div key={review?.reviewId || idx} className="bg-white rounded-xl shadow-lg p-4 md:p-6 flex flex-col items-start">
-								<div className="flex items-center gap-3 md:gap-4 mb-2">
+							// Card
+							<div
+								key={idx}
+								className="flex flex-col w-[280px] md:min-w-[480px] shrink-0 bg-white rounded-xl shadow-lg p-6 md:p-8 "
+							>
+								{/* Resim ve  isim */}
+								<div className="flex gap-3 md:gap-4 mb-4">
 									<Image
 										src={reviewerPhoto}
 										alt={reviewerName}
 										width={80}
 										height={80}
-										className="w-8 h-8 md:w-10 md:h-10 rounded-full border"
+										className="w-12 h-12 md:w-14 md:h-14 rounded-full border"
 									/>
 									<div>
-										<p className="font-semibold text-base md:text-lg">{reviewerName}</p>
-										<p className="text-xs font-light">
-											{createdAt ? createdAt.toLocaleDateString() : ""}
+										<p className="font-semibold text-md">{reviewerName}</p>
+										<p className="text-sm font-light text-gray-500">
+											{totalReviewCount > 1 && `${totalReviewCount} yorum `}
 										</p>
 									</div>
 								</div>
-								<div className="mb-2 pt-2 flex gap-0.5">
+								{/* Yıldız ve bilgi*/}
+								<div className="mb-4 flex gap-1 items-center">
 									{Array.from({ length: 5 }).map((_, i) => (
 										<span
 											key={i}
-											className={`text-xl ${i < (
-												review.starRating === "FIVE" ? 5 :
-												review.starRating === "FOUR" ? 4 :
-												review.starRating === "THREE" ? 3 :
-												review.starRating === "TWO" ? 2 :
-												review.starRating === "ONE" ? 1 : 0
-											) ? "text-yellow-500" : "text-gray-300"}`}
+											className={`text-xl ${i < review.starRating ? "text-yellow-500" : "text-gray-300"}`}
 											style={{ fontWeight: "bold", lineHeight: 1 }}
 										>
 											★
 										</span>
 									))}
+									<p className="text-sm pl-2 text-gray-500">
+										{relativeTime}
+									</p>
+									{/* Yorum metni */}
 								</div>
-								{comment && (
-									<p className="text-sm md:text-md text-gray-800 mb-2">{comment}</p>
-								)}
-								{review.reviewReply?.comment && (
-									<div className="mt-2 p-2 bg-gray-100 rounded text-sm text-gray-600">
-										<span className="font-semibold">Yanıt:</span>{" "}
-										{review.reviewReply.comment}
-									</div>
-								)}
+									<p
+										className="text-sm md:text-md text-gray-800 leading-relaxed"
+										style={{ textAlign: "justify" }}
+									>
+											{comment}
+										</p>
 							</div>
 						);
 					})}
 				</div>
-				<div className="flex flex-col justify-center items-center mt-6 md:mt-8">
-					<p className="text-center w-full mb-4 md:mb-6 text-xs md:text-sm text-primary">*Bu yorumlar Google işletme hesabından otomatik olarak alınmıştır.</p>
-					<div className="flex gap-2">
-						{Array.from({ length: pageCount }).map((_, i) => (
-							<button
-								key={i}
-								onClick={() => setPage(i)}
-								className={`w-8 h-8 flex items-center justify-center text-white font-bold transition-colors ${i === page ? 'bg-secondary ' : 'bg-primary'} cursor-pointer`}
-							>
-								{i + 1}
-							</button>
-						))}
-					</div>
-				</div>
 			</div>
+
+			<p className="mt-6 text-center text-xs md:text-sm text-primary">
+				*Bu yorumlar Google işletme hesabından otomatik olarak alınmıştır.
+			</p>
 		</section>
 	);
 }

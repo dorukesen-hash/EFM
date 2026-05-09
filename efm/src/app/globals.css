@@ -81,3 +81,15 @@ a, button, [role="button"], input, select, textarea {
 .value-card:hover {
   box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
 }
+
+/* Reviews yatay scrollbar stili */
+.reviews-scroll::-webkit-scrollbar {
+  height: 4px;
+  border-radius: 0;
+}
+.reviews-scroll::-webkit-scrollbar-track {
+  background: var(--color-primary);
+}
+.reviews-scroll::-webkit-scrollbar-thumb {
+  background: rgba(191, 161, 74);
+}

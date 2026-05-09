@@ -200,7 +200,7 @@ function Navbar() {
       <nav className="w-full bg-primary text-white font-semibold flex flex-col items-center md:sticky md:top-0 md:z-50">
         <div className="hidden md:flex w-full max-w-[1440px] h-12 md:h-[60px] items-center justify-between px-4">
           {/* Sol: Sayfa linkleri (md+ görünür) */}
-          <div className="hidden md:flex gap-2 lg:gap-4 items-center w-full justify-center">
+          <div className="hidden md:flex gap-2 items-center justify-center h-full w-full">
             {pageLinks.map((link) => (
               <Link
                 key={link.href}

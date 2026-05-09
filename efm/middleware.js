@@ -15,6 +15,12 @@ export async function middleware(req) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  // Debug log: hangi token verisini görüyoruz?
+  try {
+    // Edge ortamı konsola yazdırır; production'da istemezseniz kaldırın
+    console.log('[middleware] path=', pathname, 'tokenEmail=', token?.email, 'tokenIsAdmin=', token?.isAdmin);
+  } catch (e) {}
+
   if (!token) {
     if (isAdminApi) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
     const loginUrl = new URL('/auth/login', req.url);
@@ -41,8 +47,10 @@ export async function middleware(req) {
       if (sessionRes.ok) {
         const { user } = await sessionRes.json();
         isAdmin = user?.isAdmin === true;
+        try { console.log('[middleware] session fetched, sessionUserIsAdmin=', user?.isAdmin); } catch (e) {}
       }
-    } catch {
+    } catch (err) {
+      try { console.log('[middleware] session fetch error', err); } catch (e) {}
       // sessiz geç: aşağıdaki default davranış devreye girer
     }
   }

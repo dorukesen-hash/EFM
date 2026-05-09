@@ -12,12 +12,16 @@ export default function HomePage() {
 
   return (
     <main className="relative min-h-screen flex flex-col items-center text-foreground overflow-hidden">
-      <Image
-        src={parallax}
-        alt="bg"
-        priority
-        className="w-full h-full fixed top-0 left-0 -z-50"
-      />
+      <div className="fixed inset-0 -z-50">
+        <Image
+          src={parallax}
+          alt="bg"
+          priority
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+      </div>
        <Hero />
        <Bio />
        <Reviews />

@@ -65,7 +65,7 @@ export default function Footer() {
                     </p>
                 </div>
             </div>
-            <div className="text-center text-sm text-neutral border-t-1 border-secondary pt-4 mt-6">
+            <div className="text-center text-sm text-neutral border-t-1 border-secondary pt-4 mt-6 px-4 w-full">
                 &copy; {new Date().getFullYear()} BHM Avukatlık Bürosu. Tüm hakları saklıdır.
             </div>
         </footer>

@@ -1,0 +1,39 @@
+{
+  "name": "efm",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "admin:add": "node scripts/setAdmin.js add",
+    "admin:remove": "node scripts/setAdmin.js remove",
+    "admin:list": "node scripts/setAdmin.js list"
+  },
+  "dependencies": {
+    "@emotion/css": "^11.13.5",
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "cookie": "^1.0.2",
+    "firebase": "^11.9.1",
+    "firebase-admin": "^13.4.0",
+    "google-auth-library": "^9.14.2",
+    "googleapis": "^154.0.0",
+    "is-hotkey": "^0.2.0",
+    "next": "15.3.3",
+    "next-auth": "^4.24.13",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-toastify": "^11.0.5",
+    "slate": "^0.118.0",
+    "slate-history": "^0.113.1",
+    "slate-react": "^0.117.4"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.3",
+    "tailwindcss": "^4"
+  }
+}

@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { listImages } from "@/services/firebase/firebaseStorage";
 
-const imageOptions = [
+const localImageOptions = [
   "/assets/areas/aile.jpg",
   "/assets/areas/bilisim.jpg",
   "/assets/areas/bosanma.jpeg",
@@ -30,6 +31,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [open, setOpen] = useState(false);
+  const [storageImages, setStorageImages] = useState([]);
+  const [loadingImages, setLoadingImages] = useState(false);
 
   useEffect(() => {
     if (editData) {
@@ -44,6 +47,26 @@ export default function AddArticle({ editData, onClose, onSaved }) {
       setOpen(true);
     }
   }, [editData]);
+
+  // Firebase Storage'dan resimleri yükle
+  useEffect(() => {
+    if (open && storageImages.length === 0) {
+      loadStorageImages();
+    }
+  }, [open]);
+
+  const loadStorageImages = async () => {
+    setLoadingImages(true);
+    try {
+      const images = await listImages('articles');
+      setStorageImages(images);
+    } catch (err) {
+      console.error('Resimleri yüklemede hata:', err);
+      toast.warning('Firebase Storage resimleri yüklenemedi');
+    } finally {
+      setLoadingImages(false);
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -120,7 +143,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
         </button>
       )}
       {open && (
-        <div className="fixed inset-0 backdrop-blur-2xl flex items-center justify-center z-50 overflow-scroll ">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center z-50 overflow-scroll ">
           <div className=" max-w-[80%] min-w-xl max-h-[90vh] overflow-scroll w-full mx-auto p-8 bg-white rounded shadow relative">
             <button
               className="absolute flex justify-center items-center w-[40px] h-[40px] top-2 right-2 text-gray-500 hover:text-white cursor-pointer font-extrabold hover:bg-primary text-xl p-2  rounded-xl"
@@ -133,23 +156,70 @@ export default function AddArticle({ editData, onClose, onSaved }) {
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 item ">
               <input name="title" value={form.title} onChange={handleChange} placeholder="Başlık" className=" border-1 border-primary/20 p-2 rounded" required />
               <input name="description" value={form.description} onChange={handleChange} placeholder="Açıklama" className=" border-1 border-primary/20 p-2 rounded" required />
-              <div>
-                <label className="block mb-2 font-semibold">Görsel Seç</label>
-                <div className="flex flex-wrap justify-center">
-                  {imageOptions.map((img) => (
-                    <Image
-                      key={img}
-                      onClick={() => setForm({ ...form, image: img })}
-                      src={img}
-                      alt={img}
-                      width={96}
-                      height={96}
-                      className={`w-24 h-24 object-cover rounded cursor-pointer border ${form.image === img ? 'border-4 border-secondary' : 'border-gray-300'}`}
-                      style={{ objectFit: 'cover' }}
-                    />
-                  ))}
-                </div>
-              </div>
+               <div>
+                 <label className="block mb-2 font-semibold">Görsel Seç</label>
+                 
+                 {/* Yerel Görseller */}
+                 <div className="mb-4">
+                   <p className="text-sm text-gray-600 mb-2">📁 Yerel Görseller</p>
+                   <div className="flex flex-wrap justify-center gap-2">
+                     {localImageOptions.map((img) => (
+                       <Image
+                         key={img}
+                         onClick={() => setForm({ ...form, image: img })}
+                         src={img}
+                         alt={img}
+                         width={96}
+                         height={96}
+                         className={`w-24 h-24 object-cover rounded cursor-pointer border ${form.image === img ? 'border-4 border-secondary' : 'border-gray-300'}`}
+                         style={{ objectFit: 'cover' }}
+                       />
+                     ))}
+                   </div>
+                 </div>
+
+                 {/* Firebase Storage Görselleri */}
+                 {storageImages.length > 0 && (
+                   <div>
+                     <div className="flex items-center justify-between mb-2">
+                       <p className="text-sm text-gray-600">☁️ Firebase Storage</p>
+                       <button
+                         type="button"
+                         onClick={loadStorageImages}
+                         className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                       >
+                         🔄 Yenile
+                       </button>
+                     </div>
+                     <div className="flex flex-wrap justify-center gap-2">
+                       {storageImages.map((img) => (
+                         <div
+                           key={img.path}
+                           onClick={() => setForm({ ...form, image: img.url })}
+                           className={`relative w-24 h-24 rounded cursor-pointer border ${form.image === img.url ? 'border-4 border-secondary' : 'border-gray-300'} overflow-hidden`}
+                         >
+                           <Image
+                             src={img.url}
+                             alt={img.name}
+                             fill
+                             className="object-cover"
+                           />
+                         </div>
+                       ))}
+                     </div>
+                   </div>
+                 )}
+
+                 {loadingImages && (
+                   <p className="text-sm text-gray-500 mt-2">Resimleri yüklüyor...</p>
+                 )}
+
+                 {!loadingImages && storageImages.length === 0 && (
+                   <p className="text-sm text-gray-500 mt-2">
+                     Henüz resim yüklenmemiş. <a href="/admin/images" className="text-blue-500 hover:underline">Resimler</a> sekmesinden resim yükleyin.
+                   </p>
+                 )}
+               </div>
               <input name="author" value={form.author} onChange={handleChange} placeholder="Yazar" className=" border-1 border-primary/20 p-2 rounded" required />
               <input
                 name="date"

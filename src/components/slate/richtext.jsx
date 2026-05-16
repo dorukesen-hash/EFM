@@ -62,6 +62,7 @@ const RichTextExample = ({ value, onChange, readOnly }) => {
             }
           }
         }}
+        className="min-h-[400px] w-full"
       />
     </Slate>
   )

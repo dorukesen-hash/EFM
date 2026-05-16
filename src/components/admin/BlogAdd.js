@@ -104,21 +104,21 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
     <div>
       {!editData && (
         <button
-          className="bg-blue-600 text-white py-2 px-4 rounded font-semibold hover:bg-blue-700 transition"
-          onClick={handleOpen}
+            className="bg-primary text-white py-2 px-4 rounded font-semibold hover:bg-secondary transition hover:cursor-pointer"
+            onClick={handleOpen}
         >
           Blog Ekle
         </button>
       )}
       {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="max-w-xl w-full mx-auto p-8 bg-white rounded shadow relative">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-2xl flex items-center justify-center z-50 overflow-scroll ">
+              <div className=" max-w-[80%] min-w-xl max-h-[90vh] overflow-scroll w-full mx-auto p-8 bg-white rounded shadow relative">
             <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
+                className="absolute flex justify-center items-center w-[40px] h-[40px] top-2 right-2 text-gray-500 hover:text-white cursor-pointer font-extrabold hover:bg-primary text-xl p-2  rounded-xl"
               onClick={() => { setOpen(false); if (onClose) onClose(); }}
               aria-label="Kapat"
             >
-              ×
+              X
             </button>
             <h2 className="text-2xl font-bold mb-6">{editData ? "Blog Düzenle" : "Blog Ekle"}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -128,7 +128,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
                 value={form.title}
                 onChange={handleChange}
                 placeholder="Başlık"
-                className="w-full p-2 border rounded"
+                className="w-full  border-1 border-primary/20 p-2 rounded"
                 required
               />
               <input
@@ -137,24 +137,34 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
                 value={form.description}
                 onChange={handleChange}
                 placeholder="Açıklama (description)"
-                className="w-full p-2 border rounded"
+                className="w-full border-1 border-primary/20 p-2 rounded"
                 required
               />
-              <label htmlFor="date" className="font-semibold">Tarih</label>
-              <input id="date" name="date" type="date" value={form.date} onChange={handleChange} className="border p-2 rounded" required />
-              <label htmlFor="category" className="font-semibold">Kategori</label>
-              <select id="category" name="category" value={form.category} onChange={handleChange} className="border p-2 rounded" required>
-                <option value="">Kategori Seç</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+                <div className="w-full flex justify-between items-center">
+                    <div className="flex items-center space-x-4">
+                      <label htmlFor="date" className="font-semibold">Tarih</label>
+                      <input id="date" name="date" type="date" value={form.date} onChange={handleChange} className=" border-1 border-primary/20 p-2 rounded" required />
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <label htmlFor="category" className="font-semibold">Kategori</label>
+                      <select id="category" name="category" value={form.category} onChange={handleChange} className=" border-1 border-primary/20 p-2 rounded" required>
+                          <option value="">Kategori Seç</option>
+                        {categories.map((cat) => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
+                    </div>
+                </div>
               <label className="font-semibold">İçerik</label>
+                <div className=" border-1 border-primary/20 p-2 rounded">
               <RichTextExample value={richText} onChange={handleRichTextChange}/>
               {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-              <button type="submit" disabled={loading} className="bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">
-                {loading ? (editData ? "Güncelleniyor..." : "Kaydediliyor...") : (editData ? "Blog Güncelle" : "Blog Ekle")}
-              </button>
+                </div>
+                <div className="w-full flex justify-center">
+                  <button type="submit" disabled={loading} className="max-w-[300px] min-w-[200px]  bg-primary text-white py-2 rounded font-semibold hover:bg-secondary cursor-pointer  transition">
+                    {loading ? (editData ? "Güncelleniyor..." : "Kaydediliyor...") : (editData ? "Blog Güncelle" : "Blog Ekle")}
+                  </button>
+                </div>
             </form>
           </div>
         </div>

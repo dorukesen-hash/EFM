@@ -26,9 +26,18 @@ if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64) {
 }
 
 if (!admin.apps.length) {
+  // Environment variable'dan bucket name'i al
+  const storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+  
+  console.log('🔧 Firebase Admin SDK initializing:', {
+    projectId: serviceAccount.project_id,
+    storageBucket: storageBucket
+  });
+
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    // Firestore kullandığımız için databaseURL'e gerek yok
+    projectId: serviceAccount.project_id,
+    storageBucket: storageBucket,
   });
 }
 

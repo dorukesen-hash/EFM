@@ -38,7 +38,7 @@ export default function AdminDashboard() {
 
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
             <p className="text-sm text-blue-800">
-              <strong>Bilgi:</strong> Müşteri yorumları /api/reviews endpoint'i üzerinden serve edilmektedir ve manuel olarak güncellenebilir.
+              <strong>Bilgi:</strong> Müşteri yorumları /api/reviews endpoint&apos;i üzerinden serve edilmektedir ve manuel olarak güncellenebilir.
             </p>
           </div>
         </div>

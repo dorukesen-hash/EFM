@@ -1,14 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import bio from "../../assets/bio.jpg";
+const bioUrl = "https://firebasestorage.googleapis.com/v0/b/efm-db.firebasestorage.app/o/EFM%2F1779207557682_066c0119-9133-4304-87a1-def38ddd9776.png?alt=media";
 
 export default function Bio() {
   return (
     <section className="max-w-[1440px] w-full page-container flex flex-col md:flex-row items-center justify-center text-primary pt-20 md:pt-24 lg:pt-30 pb-16 md:pb-16 lg:pb-20 px-4 md:px-8 lg:px-12 bg-white shadow-lg">
       <div className="w-full md:w-2/5 lg:w-1/3 flex justify-center items-center mb-6 md:mb-0">
         <Image
-          src={bio}
+          src={bioUrl}
           alt="Av. Enver Furkan METE"
           width={320}
           height={420}

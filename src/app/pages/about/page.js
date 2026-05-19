@@ -1,6 +1,7 @@
 import Image from "next/image";
-import bioPic from "../../../assets/bio.jpg";
 import Link from "next/link";
+
+const bioPic = "https://firebasestorage.googleapis.com/v0/b/efm-db.firebasestorage.app/o/EFM%2F1779207557682_066c0119-9133-4304-87a1-def38ddd9776.png?alt=media";
 
 export const metadata = {
   title: "Hakkımızda - BHM Hukuk",

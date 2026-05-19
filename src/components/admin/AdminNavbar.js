@@ -13,6 +13,7 @@ export default function AdminNavbar() {
                 <Link href="/admin/blogs" className="mb-8 text-lg font-bold text-blue-400 hover:text-blue-200 transition">Blog</Link>
                 <Link href="/admin/users" className="mb-8 text-lg font-bold text-blue-400 hover:text-blue-200 transition">Kullanıcılar</Link>
                 <Link href="/admin/images" className="mb-8 text-lg font-bold text-blue-400 hover:text-blue-200 transition">Resimler</Link>
+                <Link href="/" className="mt-auto text-lg font-bold text-green-400 hover:text-green-200 transition">Ana Sayfaya Git</Link>
             </aside>
         </div>
     );

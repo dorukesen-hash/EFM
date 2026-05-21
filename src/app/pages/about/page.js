@@ -98,7 +98,7 @@ export default function AboutPage() {
                 </p>
                 <ul className="list-disc pl-5">
                     <li><strong>Eğitim:</strong> Ankara Üniversitesi Hukuk Fakültesi</li>
-                    <li><strong>Baro Sicil:</strong> Rize Barosu</li>
+                    <li><strong>Baro:</strong> Rize Barosu</li>
                 </ul>
               </div>
             </div>

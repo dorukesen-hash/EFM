@@ -16,6 +16,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="tr">
       <head>
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <meta name="theme-color" content="#ffffff" />
         <meta name="description" content={metadata.description} />
         <title>{metadata.title}</title>

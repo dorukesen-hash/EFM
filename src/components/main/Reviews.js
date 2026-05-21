@@ -78,7 +78,7 @@ export default function Reviews() {
 
 	return (
 		<section className="max-w-[1440px] w-full page-container flex flex-col items-center justify-center text-primary backdrop-blur-sm pt-20 md:pt-30 pb-16 md:pb-20 bg-white/25">
-			<h2 className="text-3xl font-bold mb-2 text-center">Müvekkillerimizin Değerlendirmeleri</h2>
+			<h2 className="text-3xl font-bold mb-2 text-center">Müvekkil Değerlendirmeleri</h2>
 			<div className="mb-6 md:mb-8 text-base md:text-lg text-primary text-center">
 				Ortalama Puan: {data.averageRating} / 5
 			</div>

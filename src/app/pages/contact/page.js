@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "İletişim - BHM Hukuk",
-  description: "BHM Hukuk ile iletişime geçin. Sorularınız ve hukuki ihtiyaçlarınız için bize ulaşın.",
+  title: "İletişim - Av. Enver Furkan Mete",
+  description: "Av. Enver Furkan Mete ile iletişime geçin. Sorularınız ve hukuki ihtiyaçlarınız için bana ulaşın.",
 };
 
 export default function ContactPage() {
@@ -117,7 +117,7 @@ export default function ContactPage() {
           </div>
               <form className="flex flex-col gap-4 col-span-1 md:col-span-2 h-full border-1 border-gray-300 rounded-md p-4 items-center">
                   <p className="text-lg mb-6 md:mb-8 text-center">
-                      Sorularınız, talepleriniz veya hukuki danışmanlık ihtiyaçlarınız için aşağıdaki formu doldurarak bizimle iletişime geçebilirsiniz.
+                      Sorularınız, talepleriniz veya hukuki danışmanlık ihtiyaçlarınız için aşağıdaki formu doldurarak benimle iletişime geçebilirsiniz.
                   </p>
                   <div className="w-full md:max-w-[400px]">
                       <label htmlFor="name" className="block text-sm font-medium indent-2">Adınız Soyadınız</label>

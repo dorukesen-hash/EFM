@@ -21,84 +21,84 @@ export default function Areas() {
             icon: "🏢",
             title: "Ticaret Hukuku",
             description:
-                "Şirket kuruluşu, birleşme & devralma, genel kurul ve ticari işlemlerinizde hukuki danışmanlık veriyoruz.",
+                "Şirket kuruluşu, birleşme & devralma, genel kurul ve ticari işlemlerinizde hukuki danışmanlık vermekteyim.",
             bg: ticaret
         },
         {
             icon: "👨‍👩‍👧‍👦",
             title: "Aile ve Miras Hukuku",
             description:
-                "Velayet, nafaka, miras paylaşımı gibi aile ve miras hukuku alanlarında yanınızdayız.",
+                "Velayet, nafaka, miras paylaşımı gibi aile ve miras hukuku alanlarında yanınızdayım.",
             bg: aile
         },
         {
             icon: "🔒",
             title: "Kişisel Verilerin Korunması (KVKK)",
             description:
-                "KVKK uyum süreçleri, veri envanteri oluşturma ve veri ihlali yönetimi konularında danışmanlık sunuyoruz.",
+                "KVKK uyum süreçleri, veri envanteri oluşturma ve veri ihlali yönetimi konularında danışmanlık sunmaktayım.",
             bg: kvkk
         },
         {
             icon: "🏛️",
             title: "İdare Hukuku",
             description:
-                "İdari işlemlere karşı dava açılması, iptal davaları ve idareyle ilgili hukuki süreçlerde yanınızdayız.",
+                "İdari işlemlere karşı dava açılması, iptal davaları ve idareyle ilgili hukuki süreçlerde yanınızdayım.",
             bg: idare
         },
         {
             icon: "🛡️",
             title: "Sigorta Hukuku",
             description:
-                "Sigorta sözleşmeleri, tazminat talepleri ve sigorta şirketleriyle yaşanan uyuşmazlıklarda hukuki danışmanlık sağlıyoruz.",
+                "Sigorta sözleşmeleri, tazminat talepleri ve sigorta şirketleriyle yaşanan uyuşmazlıklarda hukuki danışmanlık sağlamaktayım.",
             bg: sigorta
         },
         {
             icon: "⚔️",
             title: "Ceza Hukuku",
             description:
-                "Ceza davaları, soruşturma ve kovuşturma süreçlerinde etkin savunma ve hukuki destek veriyoruz.",
+                "Ceza davaları, soruşturma ve kovuşturma süreçlerinde etkin savunma ve hukuki destek vermekteyim.",
             bg: ceza
         },
         {
             icon: "💰",
             title: "Tazminat Davaları",
             description:
-                "Maddi ve manevi tazminat davalarında haklarınızı korumak için yanınızdayız.",
+                "Maddi ve manevi tazminat davalarında haklarınızı korumak için yanınızdayım.",
             bg: tazminat
         },
         {
             icon: "💔",
             title: "Boşanma Davaları",
             description:
-                "Boşanma, velayet, nafaka ve mal paylaşımı davalarında uzman desteği sağlıyoruz.",
+                "Boşanma, velayet, nafaka ve mal paylaşımı davalarında uzman destek sağlamaktayım.",
             bg: bosanma
         },
         {
             icon: "💻",
             title: "Bilişim Hukuku",
             description:
-                "İnternet, sosyal medya ve bilişim suçları ile ilgili hukuki danışmanlık ve dava hizmeti veriyoruz.",
+                "İnternet, sosyal medya ve bilişim suçları ile ilgili hukuki danışmanlık ve dava hizmeti vermekteyim.",
             bg: bilisim
         },
         {
             icon: "🏥",
             title: "Sağlık Hukuku",
             description:
-                "Sağlık hizmetlerinden kaynaklanan uyuşmazlıklar ve hasta hakları konusunda hukuki destek sunuyoruz.",
+                "Sağlık hizmetlerinden kaynaklanan uyuşmazlıklar ve hasta hakları konusunda hukuki destek sunmaktayım.",
             bg: saglik
         },
         {
             icon: "🏘️",
             title: "Gayrimenkul Hukuku",
             description:
-                "Tapu işlemleri, ipotek, kira ve taşınmaz davalarında hukuki danışmanlık veriyoruz.",
+                "Tapu işlemleri, ipotek, kira ve taşınmaz davalarında hukuki danışmanlık vermekteyim.",
             bg: miras
         }
     ];
 
     return (
         <section className="max-w-[1440px] w-full page-container flex flex-col items-center justify-center text-primary pt-20 md:pt-30 pb-16 md:pb-20 bg-foreground">
-            <h2 className="text-4xl font-bold mb-10">Çalışma Alanlarımız</h2>
+            <h2 className="text-4xl font-bold mb-10">Çalışma Alanlarım</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                 {areas.map((area, idx) => (
                     <div

@@ -4,22 +4,22 @@ import Link from "next/link";
 const bioPic = "https://firebasestorage.googleapis.com/v0/b/efm-db.firebasestorage.app/o/EFM%2F1779207557682_066c0119-9133-4304-87a1-def38ddd9776.png?alt=media";
 
 export const metadata = {
-  title: "Hakkımızda - BHM Hukuk",
-  description: "BHM Hukuk'un misyonu, vizyonu ve temel değerleri hakkında daha fazla bilgi edinin. Profesyonel ve güvenilir hukuki çözümler sunuyoruz.",
+  title: "Hakkında - Av. Enver Furkan Mete",
+  description: "Av. Enver Furkan Mete'nin misyonu, vizyonu ve temel değerleri hakkında daha fazla bilgi edinin. Profesyonel ve güvenilir hukuki çözümler sunulmaktadır.",
 };
 
 const whyUs = [
     {
         title: "Stratejik Yaklaşım",
-        description: "Her davayı kendi özel koşulları içinde değerlendirir, stratejik ve sonuç odaklı bir yol haritası çizeriz."
+        description: "Her davayı kendi özel koşulları içinde değerlendirir, stratejik ve sonuç odaklı bir yol haritası çizerim."
     },
     {
         title: "Teknolojik Altyapı",
-        description: "Hukuki süreçleri daha verimli yönetmek için en güncel teknolojilerden faydalanırız."
+        description: "Hukuki süreçleri daha verimli yönetmek için en güncel teknolojilerden faydalanırım."
     },
     {
         title: "Güvenilirlik",
-        description: "Müvekkillerimle şeffaf ve güvene dayalı bir iletişim kurarız."
+        description: "Müvekkillerimle şeffaf ve güvene dayalı bir iletişim kurarım."
     }
 ]
 
@@ -30,7 +30,7 @@ export default function AboutPage() {
       <section className="max-w-[1440px] w-full bg-foreground text-primary py-24 border-b-1 border-secondary">
         <div className="container mx-auto px-4 flex items-center justify-center flex-col">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
-            BHM Hukuk Bürosu
+            Hukuk Yolculuğum
           </h1>
         </div>
       </section>
@@ -39,10 +39,10 @@ export default function AboutPage() {
       <section className="py-20 rounded-lg bg-white shadow-md mt-5">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-color-primary mb-6">Hikayemiz</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-color-primary mb-6">Hikayem</h2>
             <div className="prose prose-lg max-w-none text-justify text-gray-800 opacity-95">
               <p>
-                  BHM Hukuk, adaletin herkes için erişilebilir olması gerektiği inancıyla Av. Enver Furkan Mete tarafından kurulmuştur. Rize’de başlayan bu yolculuk, kısa sürede dürüstlük, şeffaflık ve müvekkil odaklı yaklaşımıyla güven kazanan bir hukuk bürosuna dönüşmüştür. Alanında uzman ekibiyle, hukukun karmaşık süreçlerinde müvekkillerine yol gösteren ve haklarını en etkin şekilde savunan bir çözüm ortağı olmayı ilke edinmiştir.
+                  Av. Enver Furkan Mete, adaletin herkes için erişilebilir olması gerektiği inancıyla BHM Hukuk Bürosu bünyesinde hizmet vermektedir. Rize’de başlayan bu yolculuk, kısa sürede dürüstlük, şeffaflık ve müvekkil odaklı yaklaşımıyla güven kazanan bir adalet öncülüğüne dönüşmüştür. Çeşitli alanlardaki uzmanlıklarıyla, hukukun karmaşık süreçlerinde müvekkillerine yol gösteren ve haklarını en etkin şekilde savunan bir çözüm ortağı olmayı ilke edinmiştir.
               </p>
             </div>
           </div>
@@ -54,18 +54,18 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-16 items-start">
             <div className="text-center p-8 rounded-lg bg-white shadow-lg">
-              <h3 className="text-3xl font-bold text-color-primary mb-4">Misyonumuz</h3>
+              <h3 className="text-3xl font-bold text-color-primary mb-4">Misyon</h3>
               <div className="prose prose-lg max-w-none text-justify text-gray-800 opacity-95">
                 <p>
-                    BHM Hukuk’un misyonu; müvekkillerinin hukuki ihtiyaçlarını titizlikle analiz ederek, onlara özel, yenilikçi ve sonuç odaklı çözümler sunmaktır. Hukuki gelişmeleri ve değişen dünya dinamiklerini yakından takip ederek, bireysel ve kurumsal müvekkillerine yalnızca dava süreçlerinde değil, aynı zamanda önleyici danışmanlık hizmetleriyle de destek olmayı amaçlar. Temel hedefi, adalete giden yolda güvenilir bir yol arkadaşı olmaktır.
+                    Misyonu; müvekkillerinin hukuki ihtiyaçlarını titizlikle analiz ederek, onlara özel, yenilikçi ve sonuç odaklı çözümler sunmaktır. Hukuki gelişmeleri ve değişen dünya dinamiklerini yakından takip ederek, bireysel ve kurumsal müvekkillerine yalnızca dava süreçlerinde değil, aynı zamanda önleyici danışmanlık hizmetleriyle de destek olmayı amaçlar. Temel hedefi, adalete giden yolda güvenilir bir yol arkadaşı olmaktır.
                 </p>
               </div>
             </div>
             <div className="text-center p-8 rounded-lg bg-white shadow-lg">
-              <h3 className="text-3xl font-bold text-color-primary mb-4">Vizyonumuz</h3>
+              <h3 className="text-3xl font-bold text-color-primary mb-4">Vizyon</h3>
               <div className="prose prose-lg max-w-none text-justify text-gray-800 opacity-95">
                 <p>
-                    BHM Hukuk’un vizyonu; hukuki danışmanlık ve avukatlık hizmetlerinde kalite, güven ve etik değerlerle anılan, ulusal düzeyde öncü bir hukuk bürosu olmaktır. Teknolojiyi ve modern yaklaşımları kullanarak hukuki süreçleri daha verimli ve erişilebilir kılmayı hedefler. Sadece bugünün sorunlarını çözmekle kalmayıp, yarının hukuki dünyasını şekillendiren, sürekli gelişen bir kurum olmayı amaç edinir.
+                    Vizyonu; hukuki danışmanlık ve avukatlık hizmetlerinde kalite, güven ve etik değerlerle anılan, ulusal düzeyde öncü olmaktır. Teknolojiyi ve modern yaklaşımları kullanarak hukuki süreçleri daha verimli ve erişilebilir kılmayı hedefler. Sadece bugünün sorunlarını çözmekle kalmayıp, yarının hukuki dünyasını şekillendiren, sürekli gelişen bir avukat olmayı amaç edinir.
                 </p>
               </div>
             </div>
@@ -87,7 +87,7 @@ export default function AboutPage() {
               />
             </div>
             <div className="md:col-span-2">
-              <h2 className="text-3xl font-bold text-color-primary mb-2">Kurucu Avukat - Enver Furkan METE</h2>
+              <h2 className="text-3xl font-bold text-color-primary mb-2">Avukat - Enver Furkan METE</h2>
               <h3 className="text-xl text-color-secondary font-semibold mb-4">Hukuk Davaları & Ceza Hukuku</h3>
               <div className="prose prose-lg max-w-none text-color-text-main opacity-90">
                 <p>
@@ -110,8 +110,8 @@ export default function AboutPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-color-primary">Neden BHM Hukuk?</h2>
-                <p className="text-lg mt-2 text-color-text-main opacity-70">Bizi farklı kılan özelliklerimiz.</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-color-primary">Neden Av. Furkan Mete?</h2>
+                <p className="text-lg mt-2 text-color-text-main opacity-70">Onu farklı kılan özellikler.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8 text-center justify-center">
                 {whyUs.map((item) => (
@@ -129,7 +129,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 py-16 text-center">
           <h2 className="text-3xl font-bold text-color-primary mb-4">Hukuki Sorunlarınız İçin Buradayız</h2>
           <p className="text-xl text-color-primary opacity-80 mb-8 max-w-2xl mx-auto">
-            Profesyonel ekibimizle tanışmak ve hukuki ihtiyaçlarınız için en doğru çözümü bulmak üzere bizimle iletişime geçin.
+            Av. Furkan Mete ile tanışmak ve hukuki ihtiyaçlarınız için en doğru çözümü bulmak üzere iletişime geçin.
           </p>
           <Link href="/pages/contact" className="bg-primary text-foreground px-10 py-4 font-semibold text-lg hover:bg-secondary transition-all inline-block">
             İletişime Geçin

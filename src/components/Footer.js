@@ -20,7 +20,7 @@ export default function Footer() {
                 <div className="min-w-0 text-center md:text-left">
                     <h4 className="text-lg font-semibold mb-3">Site Haritası</h4>
                     <ul className="list-none space-y-2">
-                        <li key="about"><Link href="/pages/about" className="block py-1 hover:text-secondary transition-colors duration-500">Hakkımızda</Link></li>
+                        <li key="about"><Link href="/pages/about" className="block py-1 hover:text-secondary transition-colors duration-500">Hakkında</Link></li>
                         <li key="article"><Link href="/pages/article" className="block py-1 hover:text-secondary transition-colors duration-500">Hizmetler</Link></li>
                         <li key="blog"><Link href="/pages/blog" className="block py-1 hover:text-secondary transition-colors duration-500">Blog</Link></li>
                         <li key="contact"><Link href="/pages/contact" className="block py-1 hover:text-secondary transition-colors duration-500">İletişim</Link></li>
@@ -29,7 +29,7 @@ export default function Footer() {
                 </div>
                 {/* Hizmetlerimiz */}
                 <div className="min-w-0 text-center md:text-left">
-                    <h4 className="text-lg font-semibold mb-3">Hizmetlerimiz</h4>
+                    <h4 className="text-lg font-semibold mb-3">Hizmetlerim</h4>
                     <ul className="list-none space-y-2">
                         {services.map(service => (
                             <li key={service.key}>
@@ -67,11 +67,11 @@ export default function Footer() {
             </div>
             <div className="border-t-1 border-secondary/40 mt-6 pt-4 px-4 w-full">
                 <p className="text-xs text-white/40 text-center leading-relaxed max-w-4xl mx-auto">
-                    Rize'de hukuki danışmanlık hizmeti almak isteyen ve bunun için hukuk bürosu veya avukat arayan herkese Rize avukat ve hukuki danışmanlık verilmektedir. BHM Hukuk Bürosu olarak Rize, Artvin, Arhavi, Hopa, Pazar, Trabzon, Of, Giresun, Ordu il, ilçe ve çevrelerine avukatlık hizmeti vermekteyiz. Bizi iş hukuku, aile hukuku ve boşanma davaları, arazi ve miras davaları, kira ve ceza davaları için arayabilir ve soru sorabilirsiniz. Rize boşanma avukatı, Rize ağır ceza avukatı, Rize kira avukatı, Rize arazi avukatı, Rize iş avukatı, Rize gayrimenkul avukatı, Rize miras avukatı, Hopa ağır ceza avukatı, Arhavi ağır ceza avukatı ve hukuki olarak destek almak istediğiniz her türlü konuda bize ulaşabilirsiniz.
+                    Rize'de hukuki danışmanlık hizmeti almak isteyen ve bunun için avukat arayan herkese Rize avukat ve hukuki danışmanlık verilmektedir. Rize Barosu avukatı Enver Furkan Mete olarak Rize, Artvin, Arhavi, Hopa, Pazar, Trabzon, Of, Giresun, Ordu il, ilçe ve çevrelerine avukatlık hizmeti vermekteyim. Beni iş hukuku, aile hukuku ve boşanma davaları, arazi ve miras davaları, kira ve ceza davaları için arayabilir ve soru sorabilirsiniz. Rize boşanma avukatı, Rize ağır ceza avukatı, Rize kira avukatı, Rize arazi avukatı, Rize iş avukatı, Rize gayrimenkul avukatı, Rize miras avukatı, Hopa ağır ceza avukatı, Arhavi ağır ceza avukatı ve hukuki olarak destek almak istediğiniz her türlü konuda bana ulaşabilirsiniz.
                 </p>
             </div>
             <div className="text-center text-sm text-neutral pt-4 px-4 w-full">
-                &copy; {new Date().getFullYear()} BHM Avukatlık Bürosu. Tüm hakları saklıdır.
+                &copy; {new Date().getFullYear()} Av. Enver Furkan Mete. Tüm hakları saklıdır.
             </div>
         </footer>
     )

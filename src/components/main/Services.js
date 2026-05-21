@@ -9,44 +9,44 @@ export default function Services() {
             icon: "⚖️",
             title: "Dava ve Uyuşmazlık Çözümü",
             description:
-                "Bireysel ve kurumsal müvekkillerimize dava takibi, arabuluculuk ve alternatif uyuşmazlık çözüm yolları sunuyoruz."
+                "Bireysel ve kurumsal müvekkillerime dava takibi, arabuluculuk ve alternatif uyuşmazlık çözüm yolları sunmaktayım."
         },
         {
             icon: "📄",
             title: "Sözleşme Hazırlama ve İnceleme",
             description:
-                "Ticari ve bireysel sözleşmelerin hazırlanması, incelenmesi ve müzakere süreçlerinde profesyonel destek sağlıyoruz."
+                "Ticari ve bireysel sözleşmelerin hazırlanması, incelenmesi ve müzakere süreçlerinde profesyonel destek sağlamaktayım."
         },
         {
             icon: "📑",
             title: "Dava Takibi",
             description:
-                "Her türlü hukuki uyuşmazlıkta dava sürecinin başından sonuna kadar profesyonel takip hizmeti sunuyoruz."
+                "Her türlü hukuki uyuşmazlıkta dava sürecinin başından sonuna kadar profesyonel takip hizmeti sunmaktayım."
         },
 
         {
             icon: "📬",
             title: "İcra Takibi",
             description:
-                "Alacakların tahsili için icra takibi başlatılması ve yürütülmesinde profesyonel hizmet veriyoruz."
+                "Alacakların tahsili için icra takibi başlatılması ve yürütülmesinde profesyonel hizmet vermekteyim."
         },
         {
             icon: "📚",
             title: "Hukuki Danışmanlık",
             description:
-                "Bireysel ve kurumsal tüm hukuki sorunlarınızda danışmanlık hizmeti sunuyoruz."
+                "Bireysel ve kurumsal tüm hukuki sorunlarınızda danışmanlık hizmeti sunmaktayım."
         },
         {
             icon: "📝",
             title: "Sözleşme Hazırlama",
             description:
-                "Her türlü sözleşmenin hazırlanması, incelenmesi ve revize edilmesinde profesyonel destek sunuyoruz."
+                "Her türlü sözleşmenin hazırlanması, incelenmesi ve revize edilmesinde profesyonel destek sunmaktayım."
         },
         {
             icon: "✍️",
             title: "Dilekçe Hazırlama",
             description:
-                "Dava, başvuru ve itiraz dilekçelerinizin hazırlanmasında uzman ekibimizle yanınızdayız."
+                "Dava, başvuru ve itiraz dilekçelerinizin hazırlanmasında yanınızdayım."
         }
     ];
 
@@ -56,7 +56,7 @@ export default function Services() {
             aria-labelledby="services-title"
         >
             <h2 id="services-title" className="text-4xl font-bold mb-8 md:mb-10 text-center">
-                Hizmetlerimiz
+                Hizmetlerim
             </h2>
             <div className="flex flex-col gap-4 md:gap-6 w-full max-w-2xl">
                 {services.map((service, idx) => (

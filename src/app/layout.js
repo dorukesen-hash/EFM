@@ -7,8 +7,8 @@ import ClientLayout from "../components/ClientLayout";
 
 
 export const metadata = {
-  title: "BHM Avukatlık Bürosu — Enver Furkan Mete | Rize",
-  description: "Rize merkezli BHM Avukatlık Bürosu. Aile hukuku, ceza hukuku, idare hukuku, ticaret hukuku, miras ve tazminat davalarında deneyimli avukat Enver Furkan Mete'den profesyonel hukuki danışmanlık ve çözüm odaklı temsil.",
+  title: "Av. Enver Furkan Mete | Rize",
+  description: "Rize merkezli avukat Enver Furkan Mete. Aile hukuku, ceza hukuku, idare hukuku, ticaret hukuku, miras ve tazminat davalarında profesyonel hukuki danışmanlık ve çözüm odaklı temsil.",
 };
 
 

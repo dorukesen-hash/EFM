@@ -7,7 +7,7 @@ export default function FaqPage() {
     const faq = [
         {
             question: "Hukuki uzmanlık alanlarınız nelerdir?",
-            answer: "Büromuz, başta İcra ve İflas Hukuku, Ticaret Hukuku, Aile Hukuku, Ceza Hukuku ve Bilişim Hukuku olmak üzere geniş bir yelpazede hukuki hizmet sunmaktadır. Detaylı bilgi için hizmetlerimiz sayfamızı inceleyebilirsiniz."
+            answer: "Başta İcra ve İflas Hukuku, Ticaret Hukuku, Aile Hukuku, Ceza Hukuku ve Bilişim Hukuku olmak üzere geniş bir yelpazede hukuki hizmet sunmaktayım. Detaylı bilgi için hizmetlerim sayfasını inceleyebilirsiniz."
         },
         {
             question: "Avukatlık ücreti nasıl belirleniyor?",
@@ -15,23 +15,23 @@ export default function FaqPage() {
         },
         {
             question: "Benim davama benzer davalarda tecrübeniz var mı?",
-            answer: "Evet, portföyümüzde benzer nitelikte birçok dava bulunmaktadır. Müvekkil gizliliği esastır ancak genel olarak tecrübelerimizi ve benzer davalardaki yaklaşımımızı ilk görüşmemizde sizinle paylaşabiliriz."
+            answer: "Evet, portföyümde benzer nitelikte birçok dava bulunmaktadır. Müvekkil gizliliği esastır ancak genel olarak tecrübelerimi ve benzer davalardaki yaklaşımımı ilk görüşmemizde sizinle paylaşabilirim."
         },
         {
             question: "Davamla kim ilgilenecek?",
-            answer: "Davanız, ilgili alanda uzmanlaşmış avukatlarımızdan biri tarafından bizzat takip edilecektir. Süreç boyunca ekibimizdeki diğer avukatlar ve yardımcı personel de destek sağlayacaktır. Davanızın her aşamasında doğrudan sorumlu avukatınızla iletişim halinde olacaksınız."
+            answer: "Davanız bizzat tarafımdan takip edilecektir. Her aşamada doğrudan benimle iletişim halinde olacaksınız."
         },
         {
             question: "Dava süreci hakkında ne sıklıkla bilgilendirileceğim?",
-            answer: "Müvekkillerimizi davanın her önemli aşamasında (duruşma tarihleri, ara kararlar, bilirkişi raporları vb.) derhal bilgilendiriyoruz. Ayrıca, dilediğiniz zaman telefon veya e-posta yoluyla bize ulaşarak davanızın durumu hakkında bilgi alabilirsiniz. Şeffaf iletişim en temel prensibimizdir."
+            answer: "Müvekkillerimi davanın her önemli aşamasında (duruşma tarihleri, ara kararlar, bilirkişi raporları vb.) derhal bilgilendiriyorum. Ayrıca, dilediğiniz zaman telefon veya e-posta yoluyla bana ulaşarak davanızın durumu hakkında bilgi alabilirsiniz. Şeffaf iletişim en temel prensibimdir."
         },
         {
             question: "Davamın olası sonuçları nelerdir?",
-            answer: "Her davanın kendine özgü koşulları vardır ve kesin bir sonuç garantisi vermek hukuken ve etik olarak mümkün değildir. Ancak ilk değerlendirmemizin ardından, dosyanızın mevcut durumuna göre davanızın güçlü ve zayıf yönlerini, olası riskleri ve lehinize sonuçlanma ihtimalini sizinle dürüst bir şekilde paylaşırız."
+            answer: "Her davanın kendine özgü koşulları vardır ve kesin bir sonuç garantisi vermek hukuken ve etik olarak mümkün değildir. Ancak ilk değerlendirmemin ardından, dosyanızın mevcut durumuna göre davanızın güçlü ve zayıf yönlerini, olası riskleri ve lehinize sonuçlanma ihtimalini sizinle dürüst bir şekilde paylaşırım."
         },
         {
             question: "Davam ne kadar sürede sonuçlanır?",
-            answer: "Dava süresi, mahkemenin iş yoğunluğuna, davanın karmaşıklığına, delillerin toplanma sürecine ve diğer birçok faktöre bağlı olarak değişmektedir. Size, benzer davalardaki tecrübelerimize dayanarak tahmini bir zaman aralığı sunabiliriz, ancak bu sürenin kesin olmadığını belirtmek isteriz."
+            answer: "Dava süresi, mahkemenin iş yoğunluğuna, davanın karmaşıklığına, delillerin toplanma sürecine ve diğer birçok faktöre bağlı olarak değişmektedir. Size, benzer davalardaki tecrübelerime dayanarak tahmini bir zaman aralığı sunabilirim, ancak bu sürenin kesin olmadığını belirtmek isterim."
         },
         {
             question: "İlk görüşme için ne hazırlamam gerekiyor?",
@@ -43,7 +43,7 @@ export default function FaqPage() {
         },
         {
             question: "Müvekkil-avukat gizliliği neleri kapsar?",
-            answer: "Müvekkil-avukat gizliliği, bizimle paylaştığınız tüm bilgilerin, belgelerin ve konuşmaların meslek sırrı kapsamında korunması demektir. Bu bilgiler, sizin izniniz olmadan asla üçüncü kişilerle paylaşılamaz. Bu gizlilik, aramızdaki güven ilişkisinin temelidir."
+            answer: "Müvekkil-avukat gizliliği, benimle paylaştığınız tüm bilgilerin, belgelerin ve konuşmaların meslek sırrı kapsamında korunması demektir. Bu bilgiler, sizin izniniz olmadan asla üçüncü kişilerle paylaşılamaz. Bu gizlilik, aramızdaki güven ilişkisinin temelidir."
         }
     ]
 

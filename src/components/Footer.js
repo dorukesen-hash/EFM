@@ -65,7 +65,12 @@ export default function Footer() {
                     </p>
                 </div>
             </div>
-            <div className="text-center text-sm text-neutral border-t-1 border-secondary pt-4 mt-6 px-4 w-full">
+            <div className="border-t-1 border-secondary/40 mt-6 pt-4 px-4 w-full">
+                <p className="text-xs text-white/40 text-center leading-relaxed max-w-4xl mx-auto">
+                    Rize'de hukuki danışmanlık hizmeti almak isteyen ve bunun için hukuk bürosu veya avukat arayan herkese Rize avukat ve hukuki danışmanlık verilmektedir. BHM Hukuk Bürosu olarak Rize, Artvin, Arhavi, Hopa, Pazar, Trabzon, Of, Giresun, Ordu il, ilçe ve çevrelerine avukatlık hizmeti vermekteyiz. Bizi iş hukuku, aile hukuku ve boşanma davaları, arazi ve miras davaları, kira ve ceza davaları için arayabilir ve soru sorabilirsiniz. Rize boşanma avukatı, Rize ağır ceza avukatı, Rize kira avukatı, Rize arazi avukatı, Rize iş avukatı, Rize gayrimenkul avukatı, Rize miras avukatı, Hopa ağır ceza avukatı, Arhavi ağır ceza avukatı ve hukuki olarak destek almak istediğiniz her türlü konuda bize ulaşabilirsiniz.
+                </p>
+            </div>
+            <div className="text-center text-sm text-neutral pt-4 px-4 w-full">
                 &copy; {new Date().getFullYear()} BHM Avukatlık Bürosu. Tüm hakları saklıdır.
             </div>
         </footer>

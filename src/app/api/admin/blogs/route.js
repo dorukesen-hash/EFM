@@ -99,6 +99,24 @@ export async function PUT(req) {
   }
 }
 
+// Blog silme
+export async function DELETE(req) {
+  try {
+    const auth = await requireAdmin(req);
+    if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
+
+    const { searchParams } = new URL(req.url);
+    const slug = searchParams.get('slug');
+    if (!slug) return NextResponse.json({ error: 'slug gerekli.' }, { status: 400 });
+
+    const db = admin.firestore();
+    await db.collection('blogs').doc(slug).delete();
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
 // Tüm blogları listeleme
 export async function GET(req) {
   try {

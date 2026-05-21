@@ -3,9 +3,42 @@
 import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import RichTextExample from "../slate/richtext";
+import TiptapEditor from "../tiptap/TiptapEditor";
 
 const categories = ["Hukuk", "Teknoloji", "Güncel", "Eğitim", "Sağlık"];
+
+// Eski Slate JSON → HTML (geriye dönük uyumluluk)
+function escapeHtml(t) {
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function leafToHtml(l) {
+  let h = escapeHtml(l.text || '');
+  if (l.bold) h = `<strong>${h}</strong>`;
+  if (l.italic) h = `<em>${h}</em>`;
+  if (l.underline) h = `<u>${h}</u>`;
+  if (l.code) h = `<code>${h}</code>`;
+  return h;
+}
+function childrenToHtml(c = []) {
+  return c.map(n => n.text !== undefined ? leafToHtml(n) : nodeToHtml(n)).join('');
+}
+function nodeToHtml(n) {
+  const inner = childrenToHtml(n.children);
+  const align = n.align ? ` style="text-align:${n.align}"` : '';
+  switch (n.type) {
+    case 'heading-one':   return `<h1${align}>${inner}</h1>`;
+    case 'heading-two':   return `<h2${align}>${inner}</h2>`;
+    case 'block-quote':   return `<blockquote>${inner}</blockquote>`;
+    case 'bulleted-list': return `<ul>${inner}</ul>`;
+    case 'numbered-list': return `<ol>${inner}</ol>`;
+    case 'list-item':     return `<li>${inner}</li>`;
+    default:              return `<p${align}>${inner}</p>`;
+  }
+}
+function slateToHtml(nodes) {
+  if (!Array.isArray(nodes)) return '';
+  return nodes.map(nodeToHtml).join('');
+}
 
 
 export default function BlogAdd({ editData, onClose, onSaved }) {
@@ -20,8 +53,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
   const [success, setSuccess] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // RichText için Slate formatı
-  const [richText, setRichText] = useState(form.text ? form.text : [{ type: 'paragraph', children: [{ text: '' }] }]);
+  const [richText, setRichText] = useState('');
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -33,17 +65,19 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
         description: editData.description || "",
         text: editData.text || ""
       });
-      setRichText(editData.text || [{ type: 'paragraph', children: [{ text: '' }] }]);
-      setOpen(true); // editData varsa modalı aç
+      // Eski Slate JSON içeriği HTML'e çevir, HTML string ise direkt kullan
+      const text = editData.text || '';
+      setRichText(Array.isArray(text) ? slateToHtml(text) : text);
+      setOpen(true);
     } else {
-      setRichText([{ type: 'paragraph', children: [{ text: '' }] }]);
-      setOpen(false); // editData yoksa modalı kapat
+      setRichText('');
+      setOpen(false);
     }
   }, [editData]);
 
-  const handleRichTextChange = (value) => {
-    setRichText(value);
-    setForm({ ...form, text: value });
+  const handleRichTextChange = (html) => {
+    setRichText(html);
+    setForm(prev => ({ ...prev, text: html }));
   };
 
   const handleChange = (e) => {
@@ -97,6 +131,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
 
   const handleOpen = () => {
     setOpen(true);
+    setRichText('');
     setForm({ title: "", date: "", category: "", description: "", text: "" });
   };
 
@@ -156,10 +191,8 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
                     </div>
                 </div>
               <label className="font-semibold">İçerik</label>
-                <div className=" border-1 border-primary/20 p-2 rounded">
-              <RichTextExample value={richText} onChange={handleRichTextChange}/>
+              <TiptapEditor value={richText} onChange={handleRichTextChange} />
               {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-                </div>
                 <div className="w-full flex justify-center">
                   <button type="submit" disabled={loading} className="max-w-[300px] min-w-[200px]  bg-primary text-white py-2 rounded font-semibold hover:bg-secondary cursor-pointer  transition">
                     {loading ? (editData ? "Güncelleniyor..." : "Kaydediliyor...") : (editData ? "Blog Güncelle" : "Blog Ekle")}

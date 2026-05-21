@@ -101,7 +101,21 @@ export const authOptions = {
         try {
           // Canonical UID: Firebase Auth tarafındaki UID
           // (Admin script ve mevcut veriler users/{firebaseUid} şeklinde tuttuğu için)
-          const firebaseUser = await admin.auth().getUserByEmail(user.email);
+          let firebaseUser;
+          try {
+            firebaseUser = await admin.auth().getUserByEmail(user.email);
+          } catch (notFound) {
+            if (notFound.code === 'auth/user-not-found') {
+              firebaseUser = await admin.auth().createUser({
+                email: user.email,
+                displayName: user.name || '',
+                photoURL: user.image || '',
+                emailVerified: true,
+              });
+            } else {
+              throw notFound;
+            }
+          }
           const canonicalUid = firebaseUser.uid;
 
           await upsertUserByEmail({

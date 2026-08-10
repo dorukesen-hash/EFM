@@ -1,6 +1,33 @@
 import { NextResponse } from 'next/server';
 import admin from '../../../../services/firebase/firebaseAdmin';
 
+// Slug oluşturma fonksiyonu
+function slugify(text) {
+  if (!text) return '';
+
+  const turkishMap = {
+    'ç': 'c', 'Ç': 'c',
+    'ğ': 'g', 'Ğ': 'g',
+    'ı': 'i', 'İ': 'i',
+    'ö': 'o', 'Ö': 'o',
+    'ş': 's', 'Ş': 's',
+    'ü': 'u', 'Ü': 'u'
+  };
+
+  let slug = text.toLowerCase();
+  Object.keys(turkishMap).forEach(char => {
+    slug = slug.replace(new RegExp(char, 'g'), turkishMap[char]);
+  });
+
+  slug = slug.replace(/[^a-z0-9\s-]/g, '');
+  slug = slug.split(/\s+/).filter(Boolean).join('-');
+  slug = slug.replace(/-+/g, '-');
+  slug = slug.split('-').slice(0, 3).join('-');
+  slug = slug.replace(/^-+|-+$/g, '');
+
+  return slug;
+}
+
 async function requireAdmin(req) {
   try {
     // Cookie'den session-token'ı al
@@ -53,10 +80,17 @@ export async function POST(req) {
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { slug, title, description, image, author, date, content } = body;
-    if (!slug || !title || !description || !image || !author || !date || !content) {
+    const { title, description, image, author, date, content } = body;
+    if (!title || !description || !image || !author || !date || !content) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
+
+    // Slug'ı title'dan otomatik oluştur
+    const slug = slugify(title);
+    if (!slug) {
+      return NextResponse.json({ error: 'Geçersiz başlık: slug oluşturulamadı.' }, { status: 400 });
+    }
+
     const db = admin.firestore();
     await db.collection('articles').doc(slug).set({
       slug,

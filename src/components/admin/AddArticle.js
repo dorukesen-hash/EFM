@@ -72,30 +72,29 @@ export default function AddArticle({ editData, onClose, onSaved }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess(false);
-    
-    // Editlemede eski slug'ı koru, yoksa yeni slug oluştur
-    let slug = editData?.slug || form.title
-      .toLowerCase()
-      .replace(/[^a-z0-9ğüşıöç\s]/gi, "")
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 3)
-      .join("-");
-    
-    try {
-      const url = editData ? `/api/admin/articles` : "/api/admin/articles";
-      const method = editData ? "PUT" : "POST";
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-        body: JSON.stringify({ ...form, slug })
-      });
+   const handleSubmit = async (e) => {
+     e.preventDefault();
+     setLoading(true);
+     setError("");
+     setSuccess(false);
+     
+     try {
+       const url = editData ? `/api/admin/articles` : "/api/admin/articles";
+       const method = editData ? "PUT" : "POST";
+       
+       // POST'ta slug'ı gönderme, API'de otomatik oluşturulacak
+       // PUT'ta ise mevcut slug'ı koru
+       const payload = {
+         ...form,
+         ...(editData && { slug: editData.slug })
+       };
+       
+       const res = await fetch(url, {
+         method,
+         headers: { "Content-Type": "application/json" },
+         credentials: 'include',
+         body: JSON.stringify(payload)
+       });
       const data = await res.json();
       if (res.ok) {
         setSuccess(true);

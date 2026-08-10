@@ -84,35 +84,30 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess(false);
-    
-    // Editlemede eski slug'ı koru, yoksa yeni slug oluştur
-    let slug = editData?.slug || form.title
-      .toLowerCase()
-      .replace(/[^a-z0-9ğüşıöç\s]/gi, "")
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 3)
-      .join("-");
-      
-    try {
-      const url = editData ? "/api/admin/blogs" : "/api/admin/blogs";
-      const method = editData ? "PUT" : "POST";
-      // description alanını da gönder
-      const payload = {
-        ...form,
-        text: richText
-      };
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-        body: JSON.stringify({ ...payload, slug })
-      });
+   const handleSubmit = async (e) => {
+     e.preventDefault();
+     setLoading(true);
+     setError("");
+     setSuccess(false);
+
+     try {
+       const url = editData ? "/api/admin/blogs" : "/api/admin/blogs";
+       const method = editData ? "PUT" : "POST";
+
+       // POST'ta slug'ı gönderme, API'de otomatik oluşturulacak
+       // PUT'ta ise mevcut slug'ı koru
+       const payload = {
+         ...form,
+         text: richText,
+         ...(editData && { slug: editData.slug })
+       };
+
+       const res = await fetch(url, {
+         method,
+         headers: { "Content-Type": "application/json" },
+         credentials: 'include',
+         body: JSON.stringify(payload)
+       });
       const data = await res.json();
       if (res.ok) {
         setForm({ title: "", date: "", category: "", description: "", text: "" });

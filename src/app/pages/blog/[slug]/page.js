@@ -54,15 +54,43 @@ function getBlogHtml(text) {
 export default function BlogDetailPage() {
     const { slug } = useParams();
     const [blog, setBlog] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // slug URL'den geldiği için yüzde-kodlu (ör. Türkçe karakterler) olabilir; güvenli şekilde çöz.
+        let decodedSlug = slug;
+        try {
+            decodedSlug = decodeURIComponent(slug);
+        } catch {
+            decodedSlug = slug;
+        }
+
+        let active = true;
         fetch("/api/blogs")
             .then(res => res.json())
             .then(data => {
-                const found = (data.blogs || []).find(a => a.slug === slug);
+                if (!active) return;
+                const found = (data.blogs || []).find(
+                    a => a.slug === decodedSlug || a.id === decodedSlug || a.slug === slug
+                );
                 setBlog(found);
+            })
+            .finally(() => {
+                if (active) setLoading(false);
             });
+
+        return () => {
+            active = false;
+        };
     }, [slug]);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <p>Yükleniyor...</p>
+            </div>
+        );
+    }
 
     if (!blog) {
         return (

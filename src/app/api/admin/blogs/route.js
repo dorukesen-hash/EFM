@@ -1,32 +1,6 @@
 import { NextResponse } from 'next/server';
 import admin from '../../../../services/firebase/firebaseAdmin';
-
-// Slug oluşturma fonksiyonu (BlogAdd.js'deki slugify ile aynı)
-function slugify(text) {
-  if (!text) return '';
-
-  const turkishMap = {
-    'ç': 'c', 'Ç': 'c',
-    'ğ': 'g', 'Ğ': 'g',
-    'ı': 'i', 'İ': 'i',
-    'ö': 'o', 'Ö': 'o',
-    'ş': 's', 'Ş': 's',
-    'ü': 'u', 'Ü': 'u'
-  };
-
-  let slug = text.toLowerCase();
-  Object.keys(turkishMap).forEach(char => {
-    slug = slug.replace(new RegExp(char, 'g'), turkishMap[char]);
-  });
-
-  slug = slug.replace(/[^a-z0-9\s-]/g, '');
-  slug = slug.split(/\s+/).filter(Boolean).join('-');
-  slug = slug.replace(/-+/g, '-');
-  slug = slug.split('-').slice(0, 3).join('-');
-  slug = slug.replace(/^-+|-+$/g, '');
-
-  return slug;
-}
+import { slugify } from '../../../../utils/slugify';
 
 async function requireAdmin(req) {
   try {

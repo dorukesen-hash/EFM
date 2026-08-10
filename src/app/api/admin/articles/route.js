@@ -159,3 +159,18 @@ export async function DELETE(req) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+// Tüm makaleleri listeleme
+export async function GET(req) {
+  try {
+    const auth = await requireAdmin(req);
+    if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
+
+    const db = admin.firestore();
+    const snapshot = await db.collection('articles').get();
+    const articles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return NextResponse.json({ articles }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

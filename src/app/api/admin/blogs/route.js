@@ -159,7 +159,7 @@ export async function GET(req) {
 
     const db = admin.firestore();
     const snapshot = await db.collection('blogs').get();
-    const blogs = snapshot.docs.map(doc => ({ ...doc.data() }));
+    const blogs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     return NextResponse.json({ blogs }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

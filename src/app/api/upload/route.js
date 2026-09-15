@@ -14,7 +14,7 @@ export async function POST(req) {
     // Form data'yı al
     const formData = await req.formData();
     const file = formData.get('file');
-    const folder = 'EFM';
+    const folder = formData.get('folder') || 'EFM';
 
     if (!file) {
       console.error('❌ No file provided in request');
@@ -89,16 +89,16 @@ export async function GET(req) {
     }
 
     const { searchParams } = new URL(req.url);
-    const folder = searchParams.get('EFM');
+    const folder = searchParams.get('folder') || 'EFM';
 
     try {
       console.log(`📂 Listing images in folder: ${folder}`);
 
       const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
       console.log(`Using bucket: ${bucketName}`);
-      
+
       const bucket = admin.storage().bucket(bucketName);
-      const files = await bucket.getFiles({ prefix: `EFM/` });
+      const files = await bucket.getFiles({ prefix: `${folder}/` });
 
        const images = files[0].map((file) => ({
          name: file.name.split('/').pop(),

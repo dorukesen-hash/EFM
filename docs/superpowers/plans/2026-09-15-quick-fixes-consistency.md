@@ -663,3 +663,7 @@ git commit -m "feat: admin ve public blog sayfalarında kapak görselini göster
 - `requireAdmin()` imzası Task 2'de tanımlandı (parametresiz, `Promise<{uid:string}|null>`) ve Task 3'te dokunulan `upload/route.js`'te de aynı imza kullanıldı.
 - `image` alanı Task 4'te backend'de `image: string` (boş `''` olabilir) olarak tanımlandı; Task 5 formda `form.image` adıyla, Task 6'da `blog.image` adıyla tutarlı şekilde tüketiliyor — isim değişmiyor.
 - `listImages(folder)` ve `uploadImage(file, folder)` imzaları değişmedi (Task 3 sadece backend'in bu parametreyi doğru okumasını sağlıyor).
+
+## Deploy Notes
+
+Bu branch öncesinde yüklenen tüm görseller (hedef klasör ne olursa olsun) Firebase Storage'da tek bir `EFM/` klasörü altında toplanıyordu — bu bir bug idi ve bu branch'te düzeltildi. `EFM/` altındaki mevcut görseller zaten kullanıldıkları yerlerde (makale/blog kayıtlarındaki URL'ler değişmediği için) sorunsuz render edilmeye devam edecek, ancak artık `/admin/images` üzerinden görünmeyecek/yönetilemeyecekler; çünkü admin arayüzü artık sadece `articles/` ve `blogs/` klasörlerini listeliyor. Projeyi deploy eden kişi, Firebase Console üzerinden `EFM/*` dosyalarını `articles/*` klasörüne taşımayı (önerilen) veya bu eski havuzu bundan sonra sadece Console üzerinden yönetmeyi kabul etmeyi değerlendirmeli — aksi halde "yüklediğim eski görseller nereye kayboldu?" sorusuyla karşılaşabilir.

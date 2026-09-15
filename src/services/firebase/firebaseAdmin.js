@@ -11,12 +11,12 @@ if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64) {
     serviceAccount = JSON.parse(decoded);
    } catch (e) {
      console.error('Base64 decode hatası, dosyadan okumaya fallback:', e.message);
-     const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || 'efm/serviceAccountKey.json';
+     const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || 'serviceAccountKey.json';
      serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
    }
 } else {
   // Dosya yolundan oku (lokal geliştirme için)
-  const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || 'efm/serviceAccountKey.json';
+  const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || 'serviceAccountKey.json';
   try {
     serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
   } catch (e) {

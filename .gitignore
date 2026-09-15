@@ -23,6 +23,13 @@
 # misc
 .DS_Store
 *.pem
+.output.txt
+
+# IDE
+/.idea/
+
+# stale duplicate project copy (contains its own node_modules/.next/.env)
+/efm/
 
 # debug
 npm-debug.log*

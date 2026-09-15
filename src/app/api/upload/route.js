@@ -1,50 +1,11 @@
 import { NextResponse } from 'next/server';
 import admin from '../../../services/firebase/firebaseAdmin';
-
-async function requireAdmin(req) {
-  try {
-    const cookies = req.headers.get('cookie') || '';
-    const baseUrl = new URL(req.url).origin;
-    const sessionRes = await fetch(`${baseUrl}/api/auth/session`, {
-      headers: {
-        cookie: cookies,
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
-        'Pragma': 'no-cache',
-      },
-    });
-
-    if (!sessionRes.ok) {
-      return null;
-    }
-
-    const session = await sessionRes.json();
-    if (!session?.user) {
-      return null;
-    }
-
-    if (session.user.isAdmin === true) {
-      return { uid: session.user.id };
-    }
-
-    if (session.user.id) {
-      const db = admin.firestore();
-      const doc = await db.collection('users').doc(session.user.id).get();
-      if (doc.exists && doc.data().isAdmin) {
-        return { uid: session.user.id };
-      }
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Admin auth error:', error);
-    return null;
-  }
-}
+import { requireAdmin } from '../../../services/auth/requireAdmin';
 
 // Resim yükleme
 export async function POST(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) {
       console.error('🔐 Auth failed: User not authenticated or not admin');
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 401 });
@@ -121,7 +82,7 @@ export async function POST(req) {
 // Resimleri listeleme
 export async function GET(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) {
       console.error('🔐 Auth failed for GET request');
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 401 });
@@ -176,7 +137,7 @@ export async function GET(req) {
 // Resim silme
 export async function DELETE(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) {
       console.error('🔐 Auth failed for DELETE request');
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 401 });

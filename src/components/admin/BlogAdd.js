@@ -285,7 +285,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
                 )}
               </div>
               <label className="font-semibold">İçerik</label>
-              <TiptapEditor value={richText} onChange={handleRichTextChange} />
+              <TiptapEditor value={richText} onChange={handleRichTextChange} imageFolder="blogs" />
               {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
                 <div className="w-full flex justify-center">
                   <button type="submit" disabled={loading} className="max-w-[300px] min-w-[200px]  bg-primary text-white py-2 rounded font-semibold hover:bg-secondary cursor-pointer  transition">

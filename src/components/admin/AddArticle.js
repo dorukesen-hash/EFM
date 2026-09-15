@@ -2,7 +2,18 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import TiptapEditor from "../tiptap/TiptapEditor";
 import { listImages } from "@/services/firebase/firebaseStorage";
+
+// Eski (Tiptap öncesi) düz metin içerikleri HTML'e çevir; içerik zaten HTML ise dokunma.
+function plainOrHtmlToEditorHtml(content) {
+  if (!content) return "";
+  if (/<[a-z][\s\S]*>/i.test(content)) return content;
+  return content
+    .split(/\n{2,}/)
+    .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
 
 const localImageOptions = [
   "/assets/areas/aile.jpg",
@@ -33,17 +44,20 @@ export default function AddArticle({ editData, onClose, onSaved }) {
   const [open, setOpen] = useState(false);
   const [storageImages, setStorageImages] = useState([]);
   const [loadingImages, setLoadingImages] = useState(false);
+  const [richText, setRichText] = useState("");
 
   useEffect(() => {
     if (editData) {
+      const content = editData.content || "";
       setForm({
         title: editData.title || "",
         description: editData.description || "",
         image: editData.image || "",
         author: editData.author || "",
         date: editData.date || "",
-        content: editData.content || ""
+        content
       });
+      setRichText(plainOrHtmlToEditorHtml(content));
       setOpen(true);
     }
   }, [editData]);
@@ -66,6 +80,11 @@ export default function AddArticle({ editData, onClose, onSaved }) {
     } finally {
       setLoadingImages(false);
     }
+  };
+
+  const handleRichTextChange = (html) => {
+    setRichText(html);
+    setForm((prev) => ({ ...prev, content: html }));
   };
 
   const handleChange = (e) => {
@@ -106,6 +125,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
           date: "",
           content: ""
         });
+        setRichText("");
         setOpen(false);
         if (onClose) onClose();
         if (onSaved) onSaved();
@@ -121,6 +141,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
 
   const handleOpen = () => {
     setOpen(true);
+    setRichText("");
     setForm({
       title: "",
       description: "",
@@ -229,7 +250,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
                 className=" border-1 border-primary/20 p-2 rounded"
                 required
               />
-              <textarea name="content" value={form.content} onChange={handleChange} placeholder="İçerik" className=" min-h-[300px] border-1 border-primary/20 p-2 rounded" required />
+              <label className="font-semibold">İçerik</label>
+              <TiptapEditor value={richText} onChange={handleRichTextChange} imageFolder="articles" />
                 <div className="w-full flex justify-center">
                   <button type="submit" disabled={loading} className="max-w-[300px] min-w-[200px]  bg-primary text-white py-2 rounded font-semibold hover:bg-secondary cursor-pointer  transition">
                     {loading ? (editData ? "Güncelleniyor..." : "Kaydediliyor...") : (editData ? "Makale Güncelle" : "Makale Ekle")}

@@ -13,7 +13,7 @@ export default function ArticlesAdminPage() {
 
   const fetchArticles = async () => {
     try {
-      const res = await fetch("/api/articles");
+      const res = await fetch("/api/admin/articles", { credentials: 'include' });
       const data = await res.json();
       setArticles(data.articles || []);
     } catch {

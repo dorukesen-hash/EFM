@@ -10,7 +10,7 @@ export async function POST(req) {
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { title, date, category, description, text } = body;
+    const { title, date, category, description, text, image } = body;
     if (!title || !date || !category || !description || !text) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
@@ -28,7 +28,8 @@ export async function POST(req) {
       date,
       category,
       description,
-      text
+      text,
+      image: image || ''
     });
     return NextResponse.json({ success: true, slug }, { status: 200 });
   } catch (error) {
@@ -43,7 +44,7 @@ export async function PUT(req) {
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { slug, title, date, category, description, text } = body;
+    const { slug, title, date, category, description, text, image } = body;
     if (!slug || !title || !date || !category || !description || !text) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
@@ -54,7 +55,8 @@ export async function PUT(req) {
       date,
       category,
       description,
-      text
+      text,
+      image: image || ''
     }, { merge: true });
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

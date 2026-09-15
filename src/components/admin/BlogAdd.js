@@ -3,9 +3,26 @@
 import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import Image from "next/image";
 import TiptapEditor from "../tiptap/TiptapEditor";
+import { listImages } from "@/services/firebase/firebaseStorage";
 
 const categories = ["Hukuk", "Teknoloji", "Güncel", "Eğitim", "Sağlık"];
+
+// Blog kapak görseli için yerel görsel seçenekleri (AddArticle.js ile aynı havuz)
+const localImageOptions = [
+  "/assets/areas/aile.jpg",
+  "/assets/areas/bilisim.jpg",
+  "/assets/areas/bosanma.jpeg",
+  "/assets/areas/ceza.jpg",
+  "/assets/areas/idare.jpg",
+  "/assets/areas/kvkk.jpg",
+  "/assets/areas/miras.jpeg",
+  "/assets/areas/saglık.jpg",
+  "/assets/areas/sigorta.jpg",
+  "/assets/areas/tazminat.jpg",
+  "/assets/areas/ticaret.webp"
+];
 
 // Eski Slate JSON → HTML (geriye dönük uyumluluk)
 function escapeHtml(t) {
@@ -47,7 +64,8 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
     date: "",
     category: "",
     description: "",
-    text: ""
+    text: "",
+    image: ""
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -56,6 +74,9 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
   const [richText, setRichText] = useState('');
   const [error, setError] = useState("");
 
+  const [storageImages, setStorageImages] = useState([]);
+  const [loadingImages, setLoadingImages] = useState(false);
+
   useEffect(() => {
     if (editData) {
       setForm({
@@ -63,7 +84,8 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
         date: editData.date || "",
         category: editData.category || "",
         description: editData.description || "",
-        text: editData.text || ""
+        text: editData.text || "",
+        image: editData.image || ""
       });
       // Eski Slate JSON içeriği HTML'e çevir, HTML string ise direkt kullan
       const text = editData.text || '';
@@ -74,6 +96,26 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
       setOpen(false);
     }
   }, [editData]);
+
+  // Firebase Storage'dan blog klasöründeki resimleri yükle
+  useEffect(() => {
+    if (open && storageImages.length === 0) {
+      loadStorageImages();
+    }
+  }, [open]);
+
+  const loadStorageImages = async () => {
+    setLoadingImages(true);
+    try {
+      const images = await listImages('blogs');
+      setStorageImages(images);
+    } catch (err) {
+      console.error('Resimleri yüklemede hata:', err);
+      toast.warning('Firebase Storage resimleri yüklenemedi');
+    } finally {
+      setLoadingImages(false);
+    }
+  };
 
   const handleRichTextChange = (html) => {
     setRichText(html);
@@ -110,7 +152,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
        });
       const data = await res.json();
       if (res.ok) {
-        setForm({ title: "", date: "", category: "", description: "", text: "" });
+        setForm({ title: "", date: "", category: "", description: "", text: "", image: "" });
         setOpen(false);
         if (onClose) onClose();
         if (onSaved) onSaved();
@@ -127,7 +169,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
   const handleOpen = () => {
     setOpen(true);
     setRichText('');
-    setForm({ title: "", date: "", category: "", description: "", text: "" });
+    setForm({ title: "", date: "", category: "", description: "", text: "", image: "" });
   };
 
   return (
@@ -185,6 +227,63 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
                       </select>
                     </div>
                 </div>
+              <div>
+                <label className="block mb-2 font-semibold">Kapak Görseli (opsiyonel)</label>
+
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 mb-2">📁 Yerel Görseller</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {localImageOptions.map((img) => (
+                      <Image
+                        key={img}
+                        onClick={() => setForm({ ...form, image: img })}
+                        src={img}
+                        alt={img}
+                        width={96}
+                        height={96}
+                        className={`w-24 h-24 object-cover rounded cursor-pointer border ${form.image === img ? 'border-4 border-secondary' : 'border-gray-300'}`}
+                        style={{ objectFit: 'cover' }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {storageImages.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm text-gray-600">☁️ Firebase Storage</p>
+                      <button
+                        type="button"
+                        onClick={loadStorageImages}
+                        className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                      >
+                        🔄 Yenile
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {storageImages.map((img) => (
+                        <div
+                          key={img.path}
+                          onClick={() => setForm({ ...form, image: img.url })}
+                          className={`relative w-24 h-24 rounded cursor-pointer border ${form.image === img.url ? 'border-4 border-secondary' : 'border-gray-300'} overflow-hidden`}
+                        >
+                          <Image src={img.url} alt={img.name} fill className="object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {loadingImages && (
+                  <p className="text-sm text-gray-500 mt-2">Resimleri yüklüyor...</p>
+                )}
+
+                {!loadingImages && storageImages.length === 0 && (
+                  <p className="text-sm text-gray-500 mt-2">
+                    Henüz resim yüklenmemiş. <a href="/admin/images" className="text-blue-500 hover:underline">Resimler</a> sekmesinden resim yükleyin.
+                  </p>
+                )}
+              </div>
               <label className="font-semibold">İçerik</label>
               <TiptapEditor value={richText} onChange={handleRichTextChange} />
               {error && <div className="text-red-600 text-sm mt-2">{error}</div>}

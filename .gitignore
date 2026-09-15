@@ -31,6 +31,9 @@
 # stale duplicate project copy (contains its own node_modules/.next/.env)
 /efm/
 
+# isolated worktrees for plan execution
+/.worktrees/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

@@ -43,8 +43,17 @@ export default function BlogPage() {
                   href={`/pages/blog/${blog.slug}`}
                   className="group border-1 border-gray-300 relative flex-col flex gap-2 bg-foreground rounded-sm overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105"
               >
-                <div className="flex flex-col items-center w-full px-6 overflow-hidden">
-                  <h2 className="text-xl pt-12 font-bold text-primary mb-2 group-hover:text-secondary transition-colors duration-300">
+                {blog.image && (
+                  <Image
+                    src={blog.image}
+                    alt={blog.title}
+                    width={400}
+                    height={250}
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+                <div className={`flex flex-col items-center w-full px-6 overflow-hidden ${blog.image ? 'pt-4' : 'pt-12'}`}>
+                  <h2 className="text-xl font-bold text-primary mb-2 group-hover:text-secondary transition-colors duration-300">
                     {blog.title}
                   </h2>
                     <div className="text-primary/80 pb-16">

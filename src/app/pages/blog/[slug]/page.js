@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 
 // Geriye dönük uyumluluk: eski Slate JSON → HTML dönüştürücü
 function slateNodesToHtml(nodes) {
@@ -111,6 +112,15 @@ export default function BlogDetailPage() {
                 </div>
             </section>
             <div className="flex flex-col items-center min-h-screen w-full max-w-[1440px] pt-10 h-full">
+                {blog.image && (
+                  <Image
+                    src={blog.image}
+                    alt={blog.title}
+                    width={1200}
+                    height={600}
+                    className="w-full max-w-3xl h-64 md:h-80 object-cover rounded mb-6"
+                  />
+                )}
                 <h1 className="text-3xl md:text-4xl font-bold mb-4">{blog.title}</h1>
                 <div className="flex items-center gap-4 mb-6 text-primary text-sm">
                     <span>{blog.category}</span>

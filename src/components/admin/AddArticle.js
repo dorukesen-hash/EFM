@@ -49,6 +49,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
   const [loadingImages, setLoadingImages] = useState(false);
   const [richText, setRichText] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   useEffect(() => {
     if (editData) {
@@ -64,6 +66,10 @@ export default function AddArticle({ editData, onClose, onSaved }) {
         scheduledAt: editData.scheduledAt || ""
       });
       setRichText(plainOrHtmlToEditorHtml(content));
+      fetch(`/api/admin/articles/history?slug=${editData.slug}`, { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => setHistory(data.history || []))
+        .catch(() => setHistory([]));
       setOpen(true);
     }
   }, [editData]);
@@ -296,6 +302,11 @@ export default function AddArticle({ editData, onClose, onSaved }) {
                   <button type="button" onClick={() => setPreviewOpen(true)} className="max-w-[200px] min-w-[150px] bg-white border border-primary text-primary py-2 rounded font-semibold hover:bg-primary/10 cursor-pointer transition">
                     Önizle
                   </button>
+                  {editData && history.length > 0 && (
+                    <button type="button" onClick={() => setHistoryOpen(true)} className="max-w-[200px] min-w-[150px] bg-white border border-primary text-primary py-2 rounded font-semibold hover:bg-primary/10 cursor-pointer transition">
+                      Geçmiş ({history.length})
+                    </button>
+                  )}
                   <button type="submit" disabled={loading} className="max-w-[300px] min-w-[200px]  bg-primary text-white py-2 rounded font-semibold hover:bg-secondary cursor-pointer  transition">
                     {loading ? (editData ? "Güncelleniyor..." : "Kaydediliyor...") : (editData ? "Makale Güncelle" : "Makale Ekle")}
                   </button>
@@ -311,6 +322,22 @@ export default function AddArticle({ editData, onClose, onSaved }) {
               contentHtml={richText}
               isRichText={true}
             />
+            {historyOpen && (
+              <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[70]">
+                <div className="max-w-lg w-full mx-auto p-6 bg-white rounded shadow relative max-h-[80vh] overflow-scroll">
+                  <button onClick={() => setHistoryOpen(false)} className="absolute top-2 right-2 text-gray-500 hover:text-primary" type="button">X</button>
+                  <h3 className="text-xl font-bold mb-4">Geçmiş Sürümler</h3>
+                  <ul className="space-y-2">
+                    {history.map(h => (
+                      <li key={h.id} className="border border-primary/10 p-2 rounded">
+                        <p className="text-sm text-primary/60">{new Date(h.savedAt).toLocaleString('tr-TR')}</p>
+                        <p className="font-semibold">{h.title}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

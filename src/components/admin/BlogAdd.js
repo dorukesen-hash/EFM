@@ -6,6 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import Image from "next/image";
 import TiptapEditor from "../tiptap/TiptapEditor";
 import { listImages } from "@/services/firebase/firebaseStorage";
+import PreviewModal from "./PreviewModal";
 
 const categories = ["Hukuk", "Teknoloji", "Güncel", "Eğitim", "Sağlık"];
 
@@ -77,6 +78,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
 
   const [storageImages, setStorageImages] = useState([]);
   const [loadingImages, setLoadingImages] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   useEffect(() => {
     if (editData) {
@@ -303,12 +305,24 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
               <label className="font-semibold">İçerik</label>
               <TiptapEditor value={richText} onChange={handleRichTextChange} imageFolder="blogs" />
               {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-                <div className="w-full flex justify-center">
+                <div className="w-full flex justify-center gap-4">
+                  <button type="button" onClick={() => setPreviewOpen(true)} className="max-w-[200px] min-w-[150px] bg-white border border-primary text-primary py-2 rounded font-semibold hover:bg-primary/10 cursor-pointer transition">
+                    Önizle
+                  </button>
                   <button type="submit" disabled={loading} className="max-w-[300px] min-w-[200px]  bg-primary text-white py-2 rounded font-semibold hover:bg-secondary cursor-pointer  transition">
                     {loading ? (editData ? "Güncelleniyor..." : "Kaydediliyor...") : (editData ? "Blog Güncelle" : "Blog Ekle")}
                   </button>
                 </div>
             </form>
+            <PreviewModal
+              open={previewOpen}
+              onClose={() => setPreviewOpen(false)}
+              title={form.title}
+              subtitle={form.description}
+              meta={[form.category, form.date]}
+              contentHtml={richText}
+              isRichText={true}
+            />
           </div>
         </div>
       )}

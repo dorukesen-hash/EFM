@@ -10,6 +10,8 @@ export default function BlogsAdminPage() {
   const [loading, setLoading] = useState(true);
   const [editBlog, setEditBlog] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const fetchBlogs = async () => {
     try {
@@ -45,6 +47,37 @@ export default function BlogsAdminPage() {
     }
   };
 
+  const toggleSelect = (slug) => {
+    setSelectedIds(prev => prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`${selectedIds.length} blogu silmek istediğinize emin misiniz?`)) return;
+
+    setBulkDeleting(true);
+    let failCount = 0;
+    for (const slug of selectedIds) {
+      try {
+        const res = await fetch(`/api/admin/blogs?slug=${slug}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+        if (!res.ok) failCount += 1;
+      } catch {
+        failCount += 1;
+      }
+    }
+    setBulkDeleting(false);
+    setSelectedIds([]);
+    if (failCount > 0) {
+      toast.error(`${failCount} blog silinemedi.`);
+    } else {
+      toast.success("Seçilen bloglar silindi!");
+    }
+    fetchBlogs();
+  };
+
   useEffect(() => {
     fetchBlogs();
   }, []);
@@ -72,12 +105,29 @@ export default function BlogsAdminPage() {
           <div>Yükleniyor...</div>
         ) : (
             <section className="max-w-[1440px] w-full container mx-auto px-4 py-16">
+              {selectedIds.length > 0 && (
+                <div className="w-full flex justify-end mb-4">
+                  <button
+                    onClick={handleBulkDelete}
+                    disabled={bulkDeleting}
+                    className="bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white px-4 py-2 rounded font-semibold transition cursor-pointer"
+                  >
+                    {bulkDeleting ? "Siliniyor..." : `Seçilenleri Sil (${selectedIds.length})`}
+                  </button>
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {blogs.map((blog) => (
                     <div
                         key={blog.slug}
                         className="group border-1 border-gray-300 relative flex-col flex gap-2 bg-foreground rounded-sm overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500"
                     >
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(blog.slug)}
+                        onChange={(e) => { e.stopPropagation(); toggleSelect(blog.slug); }}
+                        className="absolute top-2 left-2 z-10 w-5 h-5 cursor-pointer"
+                      />
                       {blog.image && (
                         <Image
                           src={blog.image}

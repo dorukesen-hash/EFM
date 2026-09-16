@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-
-const CATEGORIES = ["Hukuk", "Teknoloji", "Güncel", "Eğitim", "Sağlık"];
+import { CATEGORIES } from "@/utils/categories";
 
 export default function BlogLoadMore({ initialBlogs, initialNextCursor }) {
   const [blogs, setBlogs] = useState(initialBlogs);

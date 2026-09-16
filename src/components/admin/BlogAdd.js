@@ -6,9 +6,8 @@ import { ToastContainer, toast } from "react-toastify";
 import Image from "next/image";
 import TiptapEditor from "../tiptap/TiptapEditor";
 import { listImages } from "@/services/firebase/firebaseStorage";
+import { CATEGORIES as categories } from "@/utils/categories";
 import PreviewModal from "./PreviewModal";
-
-const categories = ["Hukuk", "Teknoloji", "Güncel", "Eğitim", "Sağlık"];
 
 // Blog kapak görseli için yerel görsel seçenekleri (AddArticle.js ile aynı havuz)
 const localImageOptions = [

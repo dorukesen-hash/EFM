@@ -5,7 +5,10 @@ export async function GET() {
   try {
     const db = admin.firestore();
     const snapshot = await db.collection('articles').get();
-    const articles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const articles = snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() }))
+      // status alanı olmayan eski makaleler geriye dönük uyumluluk için görünür kalır
+      .filter(article => article.status !== 'draft');
 
     // En güncel makale ilk sırada gösterilsin diye tarihe göre (yeniden eskiye) sırala
     articles.sort((a, b) => {
@@ -19,4 +22,3 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-

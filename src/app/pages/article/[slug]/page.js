@@ -1,8 +1,13 @@
-"use client";
-
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { getArticleBySlug } from "../../../../services/firestore/content";
+import { computeReadingTime } from "../../../../utils/content";
+
+// Firebase Admin SDK okumaları (gRPC) Next.js'in dinamik-veri algılamasına görünmez;
+// bu export olmadan sayfa build zamanında statik olarak prerender edilir — yeni/güncellenen
+// makaleler redeploy'a kadar görünmez ve scheduled-yayın mantığı (isPubliclyVisible'daki
+// Date.now() kıyası) build anında donar. src/app/pages/blog/[slug]/page.js'teki (Task 3) ve
+// src/app/pages/article/page.js'teki (Task 4) aynı desen burada da uygulanıyor.
+export const dynamic = 'force-dynamic';
 
 // Eski (Tiptap öncesi) düz metin makaleler için basit paragraf dönüştürücü;
 // içerik zaten HTML (Tiptap çıktısı) ise olduğu gibi kullanılır.
@@ -15,66 +20,94 @@ function articleContentToHtml(content) {
     .join("");
 }
 
-export default function ArticleDetailPage() {
-    const { slug } = useParams();
-    const [article, setArticle] = useState(null);
-    useEffect(() => {
-        fetch("/api/articles")
-            .then(res => res.json())
-            .then(data => {
-                const found = (data.articles || []).find(a => a.slug === slug);
-                setArticle(found);
-            });
-    }, [slug]);
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const article = await getArticleBySlug(slug);
+  if (!article) return { title: "Makale Bulunamadı" };
+  return {
+    title: `${article.title} | Av. Enver Furkan Mete`,
+    description: article.description,
+    openGraph: {
+      title: article.title,
+      description: article.description,
+      type: "article",
+      publishedTime: article.date,
+      images: article.image ? [{ url: article.image }] : undefined,
+    },
+  };
+}
 
-    if (!article) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen">
-                <h1 className="text-3xl font-bold mb-4">Makale Bulunamadı</h1>
-                <p>Aradığınız makale mevcut değil veya kaldırılmış olabilir.</p>
-            </div>
-        );
-    }
+export default async function ArticleDetailPage({ params }) {
+  const { slug } = await params;
+  const article = await getArticleBySlug(slug);
 
+  if (!article) {
     return (
-        <div className="bg-background text-primary flex flex-col items-center min-h-screen">
-            {/* Hero Section */}
-            <section className="max-w-[1440px] w-full bg-foreground text-primary py-24 border-b-1 border-secondary">
-                <div className="container mx-auto px-4 flex items-center justify-center flex-col">
-                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
-                        Makaleler
-                    </h1>
-                </div>
-            </section>
-            <div className="flex flex-col items-center min-h-screen w-full max-w-[1440px] pt-10 page-container">
-                <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center w-full">{article.title}</h1>
-                <div className="flex items-center gap-4 mb-6 text-primary text-sm flex-wrap justify-center">
-                    <span>{article.author}</span>
-                    <span>•</span>
-                    <span>{article.date}</span>
-                </div>
-                <div className="w-full flex flex-col md:flex-row gap-4 md:gap-6">
-                    <div className="w-full md:w-[400px] md:flex-shrink-0">
-                        <Image
-                            src={article.image}
-                            alt={article.title}
-                            width={800}
-                            height={600}
-                            className="w-full h-auto object-cover rounded-md"
-                        />
-                    </div>
-                    <div className="flex-1">
-                        <p className="text-base md:text-lg text-justify mb-6">{article.description}</p>
-                        {/* İçerik sadece admin panelinden (auth korumalı) giriliyor; herkese açık kullanıcı
-                            girdisi bu alana ulaşmıyor. Bu alan ileride dış/kullanıcı kaynaklı içerik alacaksa
-                            dangerouslySetInnerHTML kullanmadan önce bir sanitizer (örn. DOMPurify) eklenmeli. */}
-                        <div
-                            className="article-content text-base md:text-lg text-justify text-primary"
-                            dangerouslySetInnerHTML={{ __html: articleContentToHtml(article.content) }}
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-3xl font-bold mb-4">Makale Bulunamadı</h1>
+        <p>Aradığınız makale mevcut değil veya kaldırılmış olabilir.</p>
+      </div>
     );
+  }
+
+  const html = articleContentToHtml(article.content);
+  const readingMinutes = computeReadingTime(html);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    datePublished: article.date,
+    author: { "@type": "Person", name: article.author },
+    description: article.description,
+    ...(article.image ? { image: [article.image] } : {}),
+  };
+
+  return (
+    <div className="bg-background text-primary flex flex-col items-center min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {/* Hero Section */}
+      <section className="max-w-[1440px] w-full bg-foreground text-primary py-24 border-b-1 border-secondary">
+        <div className="container mx-auto px-4 flex items-center justify-center flex-col">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+            Makaleler
+          </h1>
+        </div>
+      </section>
+      <div className="flex flex-col items-center min-h-screen w-full max-w-[1440px] pt-10 page-container">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center w-full">{article.title}</h1>
+        <div className="flex items-center gap-4 mb-6 text-primary text-sm flex-wrap justify-center">
+          <span>{article.author}</span>
+          <span>•</span>
+          <span>{article.date}</span>
+          <span>•</span>
+          <span>{readingMinutes} dk okuma</span>
+        </div>
+        <div className="w-full flex flex-col md:flex-row gap-4 md:gap-6">
+          <div className="w-full md:w-[400px] md:flex-shrink-0">
+            <Image
+              src={article.image}
+              alt={article.title}
+              width={800}
+              height={600}
+              className="w-full h-auto object-cover rounded-md"
+            />
+          </div>
+          <div className="flex-1">
+            <p className="text-base md:text-lg text-justify mb-6">{article.description}</p>
+            {/* İçerik sadece admin panelinden (auth korumalı) giriliyor; herkese açık kullanıcı
+                girdisi bu alana ulaşmıyor. Bu alan ileride dış/kullanıcı kaynaklı içerik alacaksa
+                dangerouslySetInnerHTML kullanmadan önce bir sanitizer (örn. DOMPurify) eklenmeli. */}
+            <div
+              className="article-content text-base md:text-lg text-justify text-primary"
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

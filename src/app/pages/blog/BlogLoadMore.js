@@ -73,37 +73,47 @@ export default function BlogLoadMore({ initialBlogs, initialNextCursor }) {
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {visibleBlogs.map((blog) => (
-          <Link
-            key={blog.slug}
-            href={`/pages/blog/${blog.slug}`}
-            className="group border-1 border-gray-300 relative flex-col flex gap-2 bg-foreground rounded-sm overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105"
-          >
-            {blog.image && (
-              <Image
-                src={blog.image}
-                alt={blog.title}
-                width={400}
-                height={250}
-                className="w-full h-48 object-cover"
-              />
-            )}
-            <div className={`flex flex-col items-center w-full px-6 overflow-hidden ${blog.image ? 'pt-4' : 'pt-12'}`}>
-              <h2 className="text-xl font-bold text-primary mb-2 group-hover:text-secondary transition-colors duration-300">
-                {blog.title}
-              </h2>
-              <div className="text-primary/80 pb-16">
-                <p className="line-clamp-5 text-justify">{blog.description}</p>
+      {visibleBlogs.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {visibleBlogs.map((blog) => (
+            <Link
+              key={blog.slug}
+              href={`/pages/blog/${blog.slug}`}
+              className="group border-1 border-gray-300 relative flex-col flex gap-2 bg-foreground rounded-sm overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105"
+            >
+              {blog.image && (
+                <Image
+                  src={blog.image}
+                  alt={blog.title}
+                  width={400}
+                  height={250}
+                  className="w-full h-48 object-cover"
+                />
+              )}
+              <div className={`flex flex-col items-center w-full px-6 overflow-hidden ${blog.image ? 'pt-4' : 'pt-12'}`}>
+                <h2 className="text-xl font-bold text-primary mb-2 group-hover:text-secondary transition-colors duration-300">
+                  {blog.title}
+                </h2>
+                <div className="text-primary/80 pb-16">
+                  <p className="line-clamp-5 text-justify">{blog.description}</p>
+                </div>
               </div>
-            </div>
-            <div className="absolute bg-primary shadow-xl w-full bottom-0 px-6 py-1 text-white/80 text-sm flex justify-between items-center">
-              <span>{blog.date}</span>
-              <span>{blog.category}</span>
-            </div>
-          </Link>
-        ))}
-      </div>
+              <div className="absolute bg-primary shadow-xl w-full bottom-0 px-6 py-1 text-white/80 text-sm flex justify-between items-center">
+                <span>{blog.date}</span>
+                <span>{blog.category}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        blogs.length > 0 && (
+          <div className="flex items-center justify-center py-10 text-center">
+            <p className="text-primary/70">
+              Aramanızla eşleşen içerik bulunamadı. Daha fazla sonuç için &quot;Daha Fazla Yükle&quot; butonunu deneyebilirsiniz.
+            </p>
+          </div>
+        )
+      )}
       {nextCursor && (
         <div className="w-full flex justify-center mt-10">
           <button

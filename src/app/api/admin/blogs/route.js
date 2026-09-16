@@ -10,10 +10,11 @@ export async function POST(req) {
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { title, date, category, description, text, image } = body;
+    const { title, date, category, description, text, image, status } = body;
     if (!title || !date || !category || !description || !text) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
+    const finalStatus = status === 'published' ? 'published' : 'draft';
 
     // Slug'ı title'dan otomatik oluştur
     const slug = slugify(title);
@@ -29,7 +30,8 @@ export async function POST(req) {
       category,
       description,
       text,
-      image: image || ''
+      image: image || '',
+      status: finalStatus
     });
     return NextResponse.json({ success: true, slug }, { status: 200 });
   } catch (error) {
@@ -44,10 +46,11 @@ export async function PUT(req) {
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { slug, title, date, category, description, text, image } = body;
+    const { slug, title, date, category, description, text, image, status } = body;
     if (!slug || !title || !date || !category || !description || !text) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
+    const finalStatus = status === 'published' ? 'published' : 'draft';
     const db = admin.firestore();
     await db.collection('blogs').doc(slug).set({
       slug,
@@ -56,7 +59,8 @@ export async function PUT(req) {
       category,
       description,
       text,
-      image: image || ''
+      image: image || '',
+      status: finalStatus
     }, { merge: true });
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

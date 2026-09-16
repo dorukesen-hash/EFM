@@ -9,11 +9,14 @@ export async function POST(req) {
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { title, description, image, author, date, content, status } = body;
+    const { title, description, image, author, date, content, status, scheduledAt } = body;
     if (!title || !description || !image || !author || !date || !content) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
-    const finalStatus = status === 'published' ? 'published' : 'draft';
+    const finalStatus = ['published', 'scheduled'].includes(status) ? status : 'draft';
+    if (finalStatus === 'scheduled' && !scheduledAt) {
+      return NextResponse.json({ error: 'Zamanlanmış yayın için tarih/saat gerekli.' }, { status: 400 });
+    }
 
     // Slug'ı title'dan otomatik oluştur
     const slug = slugify(title);
@@ -30,7 +33,8 @@ export async function POST(req) {
       author,
       date,
       content,
-      status: finalStatus
+      status: finalStatus,
+      scheduledAt: finalStatus === 'scheduled' ? scheduledAt : null
     });
     return NextResponse.json({ success: true, id: slug }, { status: 200 });
   } catch (error) {
@@ -44,11 +48,14 @@ export async function PUT(req) {
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { slug, title, description, image, author, date, content, status } = body;
+    const { slug, title, description, image, author, date, content, status, scheduledAt } = body;
     if (!slug || !title || !description || !image || !author || !date || !content) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
-    const finalStatus = status === 'published' ? 'published' : 'draft';
+    const finalStatus = ['published', 'scheduled'].includes(status) ? status : 'draft';
+    if (finalStatus === 'scheduled' && !scheduledAt) {
+      return NextResponse.json({ error: 'Zamanlanmış yayın için tarih/saat gerekli.' }, { status: 400 });
+    }
     const db = admin.firestore();
     await db.collection('articles').doc(slug).set({
       slug,
@@ -58,7 +65,8 @@ export async function PUT(req) {
       author,
       date,
       content,
-      status: finalStatus
+      status: finalStatus,
+      scheduledAt: finalStatus === 'scheduled' ? scheduledAt : null
     }, { merge: true });
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

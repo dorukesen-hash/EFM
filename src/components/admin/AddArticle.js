@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TiptapEditor from "../tiptap/TiptapEditor";
 import { listImages } from "@/services/firebase/firebaseStorage";
+import PreviewModal from "./PreviewModal";
 
 // Eski (Tiptap öncesi) düz metin içerikleri HTML'e çevir; içerik zaten HTML ise dokunma.
 function plainOrHtmlToEditorHtml(content) {
@@ -46,6 +47,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
   const [storageImages, setStorageImages] = useState([]);
   const [loadingImages, setLoadingImages] = useState(false);
   const [richText, setRichText] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   useEffect(() => {
     if (editData) {
@@ -270,12 +272,25 @@ export default function AddArticle({ editData, onClose, onSaved }) {
               </div>
               <label className="font-semibold">İçerik</label>
               <TiptapEditor value={richText} onChange={handleRichTextChange} imageFolder="articles" />
-                <div className="w-full flex justify-center">
+                <div className="w-full flex justify-center gap-4">
+                  <button type="button" onClick={() => setPreviewOpen(true)} className="max-w-[200px] min-w-[150px] bg-white border border-primary text-primary py-2 rounded font-semibold hover:bg-primary/10 cursor-pointer transition">
+                    Önizle
+                  </button>
                   <button type="submit" disabled={loading} className="max-w-[300px] min-w-[200px]  bg-primary text-white py-2 rounded font-semibold hover:bg-secondary cursor-pointer  transition">
                     {loading ? (editData ? "Güncelleniyor..." : "Kaydediliyor...") : (editData ? "Makale Güncelle" : "Makale Ekle")}
                   </button>
                 </div>
             </form>
+            <PreviewModal
+              open={previewOpen}
+              onClose={() => setPreviewOpen(false)}
+              title={form.title}
+              subtitle={form.description}
+              meta={[form.author, form.date]}
+              image={form.image}
+              contentHtml={form.content}
+              isRichText={false}
+            />
           </div>
         </div>
       )}

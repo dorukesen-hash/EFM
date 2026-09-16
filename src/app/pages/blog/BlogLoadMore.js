@@ -4,10 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
+const CATEGORIES = ["Hukuk", "Teknoloji", "Güncel", "Eğitim", "Sağlık"];
+
 export default function BlogLoadMore({ initialBlogs, initialNextCursor }) {
   const [blogs, setBlogs] = useState(initialBlogs);
   const [nextCursor, setNextCursor] = useState(initialNextCursor);
   const [loading, setLoading] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null);
+
+  const visibleBlogs = activeCategory
+    ? blogs.filter((b) => b.category === activeCategory)
+    : blogs;
 
   const loadMore = async () => {
     if (!nextCursor || loading) return;
@@ -33,8 +40,29 @@ export default function BlogLoadMore({ initialBlogs, initialNextCursor }) {
 
   return (
     <>
+      <div className="flex flex-wrap gap-2 mb-8 justify-center">
+        <button
+          onClick={() => setActiveCategory(null)}
+          className={`px-4 py-1 rounded-full text-sm border transition ${
+            activeCategory === null ? "bg-primary text-white border-primary" : "border-gray-300 hover:border-primary"
+          }`}
+        >
+          Tümü
+        </button>
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`px-4 py-1 rounded-full text-sm border transition ${
+              activeCategory === cat ? "bg-primary text-white border-primary" : "border-gray-300 hover:border-primary"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {blogs.map((blog) => (
+        {visibleBlogs.map((blog) => (
           <Link
             key={blog.slug}
             href={`/pages/blog/${blog.slug}`}

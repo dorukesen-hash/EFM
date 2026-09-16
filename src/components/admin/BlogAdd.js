@@ -128,6 +128,13 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
 
    const handleSubmit = async (e) => {
      e.preventDefault();
+
+     const plainText = richText.replace(/<[^>]*>/g, "").trim();
+     if (!plainText && !/<img/i.test(richText)) {
+       toast.error("İçerik boş olamaz.");
+       return;
+     }
+
      setLoading(true);
      setError("");
      setSuccess(false);

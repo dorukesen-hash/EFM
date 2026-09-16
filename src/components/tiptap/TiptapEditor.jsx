@@ -36,7 +36,7 @@ export default function TiptapEditor({ value = '', onChange, readOnly = false, i
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ history: true }),
+      StarterKit.configure({ history: true, link: false }),
       Underline,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       TextStyle,

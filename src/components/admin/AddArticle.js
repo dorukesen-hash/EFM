@@ -93,10 +93,17 @@ export default function AddArticle({ editData, onClose, onSaved }) {
 
    const handleSubmit = async (e) => {
      e.preventDefault();
+
+     const plainText = form.content.replace(/<[^>]*>/g, "").trim();
+     if (!plainText && !/<img/i.test(form.content)) {
+       toast.error("İçerik boş olamaz.");
+       return;
+     }
+
      setLoading(true);
      setError("");
      setSuccess(false);
-     
+
      try {
        const url = editData ? `/api/admin/articles` : "/api/admin/articles";
        const method = editData ? "PUT" : "POST";

@@ -1,8 +1,13 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Image from "next/image";
+import { getBlogBySlug } from "../../../../services/firestore/content";
+import { computeReadingTime, extractHeadings, addHeadingIds } from "../../../../utils/content";
+
+// Firebase Admin SDK okumaları (gRPC) Next.js'in dinamik-veri algılamasına görünmez;
+// bu export olmadan sayfa build zamanında statik olarak prerender edilir — yeni/güncellenen
+// bloglar redeploy'a kadar görünmez ve scheduled-yayın mantığı (isPubliclyVisible'daki
+// Date.now() kıyası) build anında donar. src/app/pages/blog/page.js'teki (Task 2) aynı
+// desen burada da uygulanıyor.
+export const dynamic = 'force-dynamic';
 
 // Geriye dönük uyumluluk: eski Slate JSON → HTML dönüştürücü
 function slateNodesToHtml(nodes) {
@@ -52,89 +57,106 @@ function getBlogHtml(text) {
   return text;
 }
 
-export default function BlogDetailPage() {
-    const { slug } = useParams();
-    const [blog, setBlog] = useState(null);
-    const [loading, setLoading] = useState(true);
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const blog = await getBlogBySlug(slug);
+  if (!blog) return { title: "Blog Yazısı Bulunamadı" };
+  return {
+    title: `${blog.title} | Av. Enver Furkan Mete`,
+    description: blog.description,
+    openGraph: {
+      title: blog.title,
+      description: blog.description,
+      type: "article",
+      publishedTime: blog.date,
+      images: blog.image ? [{ url: blog.image }] : undefined,
+    },
+  };
+}
 
-    useEffect(() => {
-        // slug URL'den geldiği için yüzde-kodlu (ör. Türkçe karakterler) olabilir; güvenli şekilde çöz.
-        let decodedSlug = slug;
-        try {
-            decodedSlug = decodeURIComponent(slug);
-        } catch {
-            decodedSlug = slug;
-        }
+export default async function BlogDetailPage({ params }) {
+  const { slug } = await params;
+  const blog = await getBlogBySlug(slug);
 
-        let active = true;
-        fetch("/api/blogs")
-            .then(res => res.json())
-            .then(data => {
-                if (!active) return;
-                const found = (data.blogs || []).find(
-                    a => a.slug === decodedSlug || a.id === decodedSlug || a.slug === slug
-                );
-                setBlog(found);
-            })
-            .finally(() => {
-                if (active) setLoading(false);
-            });
-
-        return () => {
-            active = false;
-        };
-    }, [slug]);
-
-    if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen">
-                <p>Yükleniyor...</p>
-            </div>
-        );
-    }
-
-    if (!blog) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen">
-                <h1 className="text-3xl font-bold mb-4">Blog yazısı Bulunamadı</h1>
-                <p>Aradığınız yazı mevcut değil veya kaldırılmış olabilir.</p>
-            </div>
-        );
-    }
-
+  if (!blog) {
     return (
-        <div className="bg-background text-primary flex flex-col items-center min-h-screen">
-            <section className="max-w-[1440px] w-full bg-foreground text-primary py-24 border-b-1 border-secondary">
-                <div className="container mx-auto px-4 flex items-center justify-center flex-col">
-                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
-                        Blog Yazıları
-                    </h1>
-                </div>
-            </section>
-            <div className="flex flex-col items-center min-h-screen w-full max-w-[1440px] pt-10 h-full">
-                {blog.image && (
-                  <Image
-                    src={blog.image}
-                    alt={blog.title}
-                    width={1200}
-                    height={600}
-                    className="w-full max-w-3xl h-64 md:h-80 object-cover rounded mb-6"
-                  />
-                )}
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">{blog.title}</h1>
-                <div className="flex items-center gap-4 mb-6 text-primary text-sm">
-                    <span>{blog.category}</span>
-                    <span>•</span>
-                    <span>{blog.date}</span>
-                </div>
-                <div className="p-6 w-full">
-                    <p className="text-lg text-justify mb-6">{blog.description}</p>
-                    <div
-                        className="blog-content text-base text-primary"
-                        dangerouslySetInnerHTML={{ __html: getBlogHtml(blog.text) }}
-                    />
-                </div>
-            </div>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-3xl font-bold mb-4">Blog yazısı Bulunamadı</h1>
+        <p>Aradığınız yazı mevcut değil veya kaldırılmış olabilir.</p>
+      </div>
     );
+  }
+
+  const html = getBlogHtml(blog.text);
+  // Trust boundary: `html` Firestore'daki blog dokümanından geliyor ve sadece
+  // admin panel üzerinden (auth arkasında) yazılabiliyor — bu yüzden
+  // dangerouslySetInnerHTML burada güvenli kabul ediliyor (kullanıcı girdisi değil).
+  const htmlWithIds = addHeadingIds(html);
+  const headings = extractHeadings(html);
+  const readingMinutes = computeReadingTime(html);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: blog.title,
+    datePublished: blog.date,
+    description: blog.description,
+    ...(blog.image ? { image: [blog.image] } : {}),
+  };
+
+  return (
+    <div className="bg-background text-primary flex flex-col items-center min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <section className="max-w-[1440px] w-full bg-foreground text-primary py-24 border-b-1 border-secondary">
+        <div className="container mx-auto px-4 flex items-center justify-center flex-col">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+            Blog Yazıları
+          </h1>
+        </div>
+      </section>
+      <div className="flex flex-col items-center min-h-screen w-full max-w-[1440px] pt-10 h-full">
+        {blog.image && (
+          <Image
+            src={blog.image}
+            alt={blog.title}
+            width={1200}
+            height={600}
+            className="w-full max-w-3xl h-64 md:h-80 object-cover rounded mb-6"
+          />
+        )}
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">{blog.title}</h1>
+        <div className="flex items-center gap-4 mb-6 text-primary text-sm">
+          <span>{blog.category}</span>
+          <span>•</span>
+          <span>{blog.date}</span>
+          <span>•</span>
+          <span>{readingMinutes} dk okuma</span>
+        </div>
+        <div className="p-6 w-full flex flex-col md:flex-row gap-8">
+          {headings.length > 0 && (
+            <nav className="md:w-64 flex-shrink-0 order-2 md:order-1">
+              <p className="font-semibold mb-2">İçindekiler</p>
+              <ul className="space-y-1 text-sm">
+                {headings.map(h => (
+                  <li key={h.id} className={h.level === 3 ? "ml-4" : ""}>
+                    <a href={`#${h.id}`} className="hover:text-secondary">{h.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+          <div className="flex-1 order-1 md:order-2">
+            <p className="text-lg text-justify mb-6">{blog.description}</p>
+            <div
+              className="blog-content text-base text-primary"
+              dangerouslySetInnerHTML={{ __html: htmlWithIds }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

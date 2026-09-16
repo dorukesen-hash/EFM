@@ -10,6 +10,8 @@ import { computeReadingTime } from "../../../../utils/content";
 // src/app/pages/article/page.js'teki (Task 4) aynı desen burada da uygulanıyor.
 export const dynamic = 'force-dynamic';
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://enverfurkanmete.av.tr";
+
 // Eski (Tiptap öncesi) düz metin makaleler için basit paragraf dönüştürücü;
 // içerik zaten HTML (Tiptap çıktısı) ise olduğu gibi kullanılır.
 function articleContentToHtml(content) {
@@ -63,7 +65,7 @@ export default async function ArticleDetailPage({ params }) {
     datePublished: article.date,
     author: { "@type": "Person", name: article.author },
     description: article.description,
-    ...(article.image ? { image: [article.image] } : {}),
+    ...(article.image ? { image: [new URL(article.image, SITE_URL).toString()] } : {}),
   };
 
   return (

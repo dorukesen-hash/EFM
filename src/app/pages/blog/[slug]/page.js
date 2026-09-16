@@ -10,6 +10,8 @@ import { computeReadingTime, extractHeadings, addHeadingIds } from "../../../../
 // desen burada da uygulanıyor.
 export const dynamic = 'force-dynamic';
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://enverfurkanmete.av.tr";
+
 // Geriye dönük uyumluluk: eski Slate JSON → HTML dönüştürücü
 function slateNodesToHtml(nodes) {
   if (!Array.isArray(nodes)) return '';
@@ -104,7 +106,7 @@ export default async function BlogDetailPage({ params }) {
     headline: blog.title,
     datePublished: blog.date,
     description: blog.description,
-    ...(blog.image ? { image: [blog.image] } : {}),
+    ...(blog.image ? { image: [new URL(blog.image, SITE_URL).toString()] } : {}),
   };
 
   return (

@@ -7,6 +7,7 @@ import ClientLayout from "../components/ClientLayout";
 
 
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://enverfurkanmete.av.tr"),
   title: "Av. Enver Furkan Mete | Rize",
   description: "Rize merkezli avukat Enver Furkan Mete. Aile hukuku, ceza hukuku, idare hukuku, ticaret hukuku, miras ve tazminat davalarında profesyonel hukuki danışmanlık ve çözüm odaklı temsil.",
 };

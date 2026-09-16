@@ -1,23 +1,14 @@
 import { NextResponse } from 'next/server';
-import admin from '../../../services/firebase/firebaseAdmin';
+import { getBlogsPage } from '../../../services/firestore/content';
 
-function isPubliclyVisible(doc) {
-  if (doc.status === undefined) return true;
-  if (doc.status === 'published') return true;
-  if (doc.status === 'scheduled' && doc.scheduledAt) {
-    return new Date(doc.scheduledAt).getTime() <= Date.now();
-  }
-  return false;
-}
-
-export async function GET() {
+export async function GET(req) {
   try {
-    const db = admin.firestore();
-    const snapshot = await db.collection('blogs').get();
-    const blogs = snapshot.docs
-      .map(doc => ({ id: doc.id, ...doc.data() }))
-      .filter(isPubliclyVisible);
-    return NextResponse.json({ blogs }, { status: 200 });
+    const { searchParams } = new URL(req.url);
+    const limit = parseInt(searchParams.get('limit') || '9', 10);
+    const cursor = searchParams.get('cursor') || null;
+
+    const { blogs, nextCursor } = await getBlogsPage({ limit, cursor });
+    return NextResponse.json({ blogs, nextCursor }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

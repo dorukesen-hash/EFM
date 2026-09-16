@@ -1,31 +1,14 @@
 import { NextResponse } from 'next/server';
-import admin from '../../../services/firebase/firebaseAdmin';
+import { getArticlesPage } from '../../../services/firestore/content';
 
-function isPubliclyVisible(doc) {
-  if (doc.status === undefined) return true; // eski, status alanı olmayan makaleler
-  if (doc.status === 'published') return true;
-  if (doc.status === 'scheduled' && doc.scheduledAt) {
-    return new Date(doc.scheduledAt).getTime() <= Date.now();
-  }
-  return false; // draft, veya zamanı henüz gelmemiş scheduled
-}
-
-export async function GET() {
+export async function GET(req) {
   try {
-    const db = admin.firestore();
-    const snapshot = await db.collection('articles').get();
-    const articles = snapshot.docs
-      .map(doc => ({ id: doc.id, ...doc.data() }))
-      .filter(isPubliclyVisible);
+    const { searchParams } = new URL(req.url);
+    const limit = parseInt(searchParams.get('limit') || '9', 10);
+    const cursor = searchParams.get('cursor') || null;
 
-    // En güncel makale ilk sırada gösterilsin diye tarihe göre (yeniden eskiye) sırala
-    articles.sort((a, b) => {
-      const da = a.date ? new Date(a.date).getTime() : 0;
-      const db_ = b.date ? new Date(b.date).getTime() : 0;
-      return db_ - da;
-    });
-
-    return NextResponse.json({ articles }, { status: 200 });
+    const { articles, nextCursor } = await getArticlesPage({ limit, cursor });
+    return NextResponse.json({ articles, nextCursor }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

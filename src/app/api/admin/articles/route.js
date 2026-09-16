@@ -9,8 +9,8 @@ export async function POST(req) {
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { title, description, image, author, date, content, status, scheduledAt } = body;
-    if (!title || !description || !image || !author || !date || !content) {
+    const { title, description, image, author, date, category, content, status, scheduledAt } = body;
+    if (!title || !description || !image || !author || !date || !category || !content) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
     const finalStatus = ['published', 'scheduled'].includes(status) ? status : 'draft';
@@ -32,6 +32,7 @@ export async function POST(req) {
       image,
       author,
       date,
+      category,
       content,
       status: finalStatus,
       scheduledAt: finalStatus === 'scheduled' ? scheduledAt : null
@@ -48,8 +49,8 @@ export async function PUT(req) {
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { slug, title, description, image, author, date, content, status, scheduledAt } = body;
-    if (!slug || !title || !description || !image || !author || !date || !content) {
+    const { slug, title, description, image, author, date, category, content, status, scheduledAt } = body;
+    if (!slug || !title || !description || !image || !author || !date || !category || !content) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
     const finalStatus = ['published', 'scheduled'].includes(status) ? status : 'draft';
@@ -72,6 +73,7 @@ export async function PUT(req) {
       image,
       author,
       date,
+      category,
       content,
       status: finalStatus,
       scheduledAt: finalStatus === 'scheduled' ? scheduledAt : null

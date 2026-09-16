@@ -26,6 +26,8 @@ function isoToLocalInput(iso) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+const categories = ["Hukuk", "Teknoloji", "Güncel", "Eğitim", "Sağlık"];
+
 const localImageOptions = [
   "/assets/areas/aile.jpg",
   "/assets/areas/bilisim.jpg",
@@ -47,6 +49,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
     image: "",
     author: "",
     date: "",
+    category: "",
     content: "",
     status: "draft",
     scheduledAt: ""
@@ -71,6 +74,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
         image: editData.image || "",
         author: editData.author || "",
         date: editData.date || "",
+        category: editData.category || "",
         content,
         status: editData.status || "draft",
         scheduledAt: isoToLocalInput(editData.scheduledAt)
@@ -153,6 +157,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
           image: "",
           author: "",
           date: "",
+          category: "",
           content: "",
           status: "draft",
           scheduledAt: ""
@@ -180,6 +185,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
       image: "",
       author: "",
       date: "",
+      category: "",
       content: "",
       status: "draft",
       scheduledAt: ""
@@ -274,6 +280,15 @@ export default function AddArticle({ editData, onClose, onSaved }) {
                    </p>
                  )}
                </div>
+              <div className="flex items-center space-x-4">
+                <label htmlFor="category" className="font-semibold">Kategori</label>
+                <select id="category" name="category" value={form.category} onChange={handleChange} className="border-1 border-primary/20 p-2 rounded" required>
+                  <option value="">Kategori Seç</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
               <input name="author" value={form.author} onChange={handleChange} placeholder="Yazar" className=" border-1 border-primary/20 p-2 rounded" required />
               <input
                 name="date"

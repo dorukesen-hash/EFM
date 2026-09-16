@@ -11,10 +11,13 @@ export default function BlogLoadMore({ initialBlogs, initialNextCursor }) {
   const [nextCursor, setNextCursor] = useState(initialNextCursor);
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const visibleBlogs = activeCategory
-    ? blogs.filter((b) => b.category === activeCategory)
-    : blogs;
+  const visibleBlogs = blogs.filter((b) => {
+    const matchesCategory = !activeCategory || b.category === activeCategory;
+    const matchesSearch = !searchTerm || b.title.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const loadMore = async () => {
     if (!nextCursor || loading) return;
@@ -40,6 +43,15 @@ export default function BlogLoadMore({ initialBlogs, initialNextCursor }) {
 
   return (
     <>
+      <div className="w-full max-w-md mx-auto mb-6">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Başlıkta ara..."
+          className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-secondary"
+        />
+      </div>
       <div className="flex flex-wrap gap-2 mb-8 justify-center">
         <button
           onClick={() => setActiveCategory(null)}

@@ -8,6 +8,11 @@ export default function ArticleLoadMore({ initialArticles, initialNextCursor }) 
   const [articles, setArticles] = useState(initialArticles);
   const [nextCursor, setNextCursor] = useState(initialNextCursor);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const visibleArticles = articles.filter((a) =>
+    !searchTerm || a.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const loadMore = async () => {
     if (!nextCursor || loading) return;
@@ -41,8 +46,17 @@ export default function ArticleLoadMore({ initialArticles, initialNextCursor }) 
 
   return (
     <>
+      <div className="w-full max-w-md mx-auto mb-6">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Makale başlığında ara..."
+          className="w-full border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-secondary"
+        />
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-        {articles.map((article, index) => (
+        {visibleArticles.map((article, index) => (
           <Link
             key={article.id ?? article.slug ?? index}
             href={`/pages/article/${article.slug}`}

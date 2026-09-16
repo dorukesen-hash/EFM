@@ -94,7 +94,12 @@ export default function ArticlesAdminPage() {
                        </div>
                        <div className="absolute bg-primary shadow-xl w-full bottom-0 px-6 py-1 text-white/80 text-sm flex justify-between items-center">
                          <span>{article.author}</span>
-                         <span>{article.date}</span>
+                         <span className="flex items-center gap-2">
+                           <span className={`text-xs px-2 py-0.5 rounded ${article.status === 'published' ? 'bg-green-500' : 'bg-yellow-500'}`}>
+                             {article.status === 'published' ? 'Yayında' : 'Taslak'}
+                           </span>
+                           {article.date}
+                         </span>
                        </div>
                        <div className="absolute top-0 right-0 flex gap-2 p-2 opacity-0 group-hover:opacity-100 transition">
                          <button

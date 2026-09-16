@@ -19,6 +19,31 @@ function safeDecode(slug) {
   }
 }
 
+// Sayfalama cursor'ı sadece `date` alanından oluşursa, aynı `date` değerine sahip
+// (örn. aynı gün yayınlanmış) birden fazla doküman varsa Firestore'un
+// startAfter(date) çağrısı o tarihe sahip TÜM dokümanları atlar — sadece cursor'ın
+// geldiği dokümanı değil. `date` <input type="date"> gibi gün hassasiyetinde
+// (YYYY-MM-DD) girildiği için aynı güne denk gelen iki içerik pratikte olasıdır.
+// Bunu önlemek için cursor, (date, documentId) ikilisinden oluşan bileşik bir
+// değerdir — tek başına `date` asla eşsiz bir sıralama anahtarı olmadığından,
+// documentId ikinci sıralama alanı olarak eklenir (Firestore bunun için ekstra bir
+// composite index istemez, orderBy(field).orderBy(documentId()) standart bir
+// pattern'dir). Dışa aktarılan (API'ye dönen) cursor string formatı: `"${date}|${id}"`
+// — `date` sabit YYYY-MM-DD formatında olduğu ve `|` karakteri içermediği için, bu
+// string ilk `|` karakterinden ikiye bölünerek güvenle decode edilebilir (id kısmı
+// teorik olarak `|` içerse bile sorun olmaz, çünkü sadece date tarafı format olarak
+// sabit tutulur ve ilk ayraçtan bölünür).
+function encodeCursor(item) {
+  return `${item.date}|${item.id}`;
+}
+
+function decodeCursor(cursor) {
+  if (!cursor) return null;
+  const sep = cursor.indexOf('|');
+  if (sep === -1) return null; // eski/bozuk (yalnızca-date) cursor — baştan başla
+  return { date: cursor.slice(0, sep), id: cursor.slice(sep + 1) };
+}
+
 // Task 1 brief'i status alanını dikkate almadan yazılmıştı; ama repo'da draft/scheduled/
 // published görünürlük mantığı (isPubliclyVisible) src/app/api/articles/route.js ve
 // src/app/api/blogs/route.js içinde zaten var ve review'dan geçti. Aynı mantığı burada da
@@ -33,26 +58,34 @@ function isPubliclyVisible(doc) {
   return false; // draft, veya zamanı henüz gelmemiş scheduled
 }
 
-// Verilen collection'dan, tarihe göre (yeniden eskiye) sıralı, sadece publicly-visible
-// dokümanlardan oluşan bir "sayfa" döner. Firestore'un .limit(n)'i ham dokümanlar üzerinde
-// çalıştığı için (status filtresinden önce), tek bir .limit(n) sorgusu draft/scheduled
-// dokümanlar yüzünden n'den az görünür sonuç döndürebilir. Bunu önlemek için: ham
-// dokümanları limit boyutunda batch'ler halinde okuyup, uygulama tarafında filtreleyip
-// biriktiriyoruz; limit'e ulaşana, ham dokümanlar tükenene ya da deneme sınırına
-// (MAX_FETCH_ATTEMPTS) ulaşana kadar devam ediyoruz. nextCursor, sayfaya dahil edilen
-// SON görünür dokümanın işlendiği ham dokümanın `date` alanı olarak set edilir — böylece
-// bir batch içinde limit'i doldurduktan sonra kalan (henüz döndürülmemiş) görünür
-// dokümanlar bir sonraki sayfa isteğinde tekrar taranır ve kaybolmaz.
+// Verilen collection'dan, tarihe göre (yeniden eskiye, eşit tarihlerde documentId'ye
+// göre) sıralı, sadece publicly-visible dokümanlardan oluşan bir "sayfa" döner.
+// Firestore'un .limit(n)'i ham dokümanlar üzerinde çalıştığı için (status
+// filtresinden önce), tek bir .limit(n) sorgusu draft/scheduled dokümanlar yüzünden
+// n'den az görünür sonuç döndürebilir. Bunu önlemek için: ham dokümanları limit
+// boyutunda batch'ler halinde okuyup, uygulama tarafında filtreleyip biriktiriyoruz;
+// limit'e ulaşana, ham dokümanlar tükenene ya da deneme sınırına
+// (MAX_FETCH_ATTEMPTS) ulaşana kadar devam ediyoruz. `cursorParts`, sayfaya dahil
+// edilen SON görünür dokümanın işlendiği ham dokümanın (date, id) ikilisi olarak
+// güncellenir — böylece bir batch içinde limit'i doldurduktan sonra kalan (henüz
+// döndürülmemiş) görünür dokümanlar bir sonraki sayfa isteğinde tekrar taranır ve
+// kaybolmaz. (date, id) ikilisi kullanılması, aynı `date` değerine sahip birden
+// fazla dokümanın sayfa sınırında sessizce atlanmasını (bkz. decodeCursor üstündeki
+// yorum) önler.
 async function fetchVisiblePage(db, collectionName, { limit, cursor }) {
   const visible = [];
-  let currentCursor = cursor || null;
+  let cursorParts = decodeCursor(cursor); // { date, id } | null
   let exhausted = false; // ham dokümanların tükendiğini kesin olarak biliyorsak true
   let attempts = 0;
 
   while (visible.length < limit && attempts < MAX_FETCH_ATTEMPTS && !exhausted) {
     attempts += 1;
-    let query = db.collection(collectionName).orderBy('date', 'desc').limit(limit);
-    if (currentCursor) query = query.startAfter(currentCursor);
+    let query = db
+      .collection(collectionName)
+      .orderBy('date', 'desc')
+      .orderBy(admin.firestore.FieldPath.documentId(), 'desc')
+      .limit(limit);
+    if (cursorParts) query = query.startAfter(cursorParts.date, cursorParts.id);
 
     const snapshot = await query.get();
     if (snapshot.empty) {
@@ -63,7 +96,7 @@ async function fetchVisiblePage(db, collectionName, { limit, cursor }) {
     const rawDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     let filledInThisBatch = false;
     for (const item of rawDocs) {
-      currentCursor = item.date ?? currentCursor;
+      cursorParts = { date: item.date, id: item.id };
       if (isPubliclyVisible(item)) {
         visible.push(item);
         if (visible.length === limit) {
@@ -80,11 +113,11 @@ async function fetchVisiblePage(db, collectionName, { limit, cursor }) {
       exhausted = true;
       break;
     }
-    // Aksi halde döngü devam eder; currentCursor bu batch'teki son ham dokümanın
-    // tarihine güncellendi.
+    // Aksi halde döngü devam eder; cursorParts bu batch'teki son ham dokümanın
+    // (date, id) ikilisine güncellendi.
   }
 
-  const nextCursor = exhausted ? null : currentCursor;
+  const nextCursor = exhausted || !cursorParts ? null : encodeCursor(cursorParts);
   return { items: visible.slice(0, limit), nextCursor };
 }
 

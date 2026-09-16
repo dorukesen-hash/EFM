@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { getBlogBySlug } from "../../../../services/firestore/content";
+import Link from "next/link";
+import { getBlogBySlug, getRelatedBlogs } from "../../../../services/firestore/content";
 import { computeReadingTime, extractHeadings, addHeadingIds } from "../../../../utils/content";
 
 // Firebase Admin SDK okumaları (gRPC) Next.js'in dinamik-veri algılamasına görünmez;
@@ -87,6 +88,8 @@ export default async function BlogDetailPage({ params }) {
     );
   }
 
+  const relatedBlogs = await getRelatedBlogs(blog.category, blog.slug);
+
   const html = getBlogHtml(blog.text);
   // Trust boundary: `html` Firestore'daki blog dokümanından geliyor ve sadece
   // admin panel üzerinden (auth arkasında) yazılabiliyor — bu yüzden
@@ -154,6 +157,23 @@ export default async function BlogDetailPage({ params }) {
               className="blog-content text-base text-primary"
               dangerouslySetInnerHTML={{ __html: htmlWithIds }}
             />
+            {relatedBlogs.length > 0 && (
+              <div className="w-full mt-12 pt-8 border-t border-gray-200">
+                <h3 className="text-xl font-bold mb-4">İlgili Yazılar</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {relatedBlogs.map(rb => (
+                    <Link
+                      key={rb.slug}
+                      href={`/pages/blog/${rb.slug}`}
+                      className="block p-4 border border-gray-200 rounded hover:border-secondary transition"
+                    >
+                      <p className="font-semibold line-clamp-2">{rb.title}</p>
+                      <p className="text-sm text-primary/60 mt-1">{rb.date}</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

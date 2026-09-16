@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { getArticleBySlug } from "../../../../services/firestore/content";
+import Link from "next/link";
+import { getArticleBySlug, getRelatedArticles } from "../../../../services/firestore/content";
 import { computeReadingTime } from "../../../../utils/content";
 
 // Firebase Admin SDK okumaları (gRPC) Next.js'in dinamik-veri algılamasına görünmez;
@@ -49,6 +50,8 @@ export default async function ArticleDetailPage({ params }) {
       </div>
     );
   }
+
+  const relatedArticles = await getRelatedArticles(article.category, article.slug);
 
   const html = articleContentToHtml(article.content);
   const readingMinutes = computeReadingTime(html);
@@ -107,6 +110,23 @@ export default async function ArticleDetailPage({ params }) {
             />
           </div>
         </div>
+        {relatedArticles.length > 0 && (
+          <div className="w-full mt-12 pt-8 border-t border-gray-200">
+            <h3 className="text-xl font-bold mb-4">İlgili Makaleler</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {relatedArticles.map(ra => (
+                <Link
+                  key={ra.slug}
+                  href={`/pages/article/${ra.slug}`}
+                  className="block p-4 border border-gray-200 rounded hover:border-secondary transition"
+                >
+                  <p className="font-semibold line-clamp-2">{ra.title}</p>
+                  <p className="text-sm text-primary/60 mt-1">{ra.date}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

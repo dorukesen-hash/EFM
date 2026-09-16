@@ -166,3 +166,45 @@ export async function getBlogBySlug(slug) {
   const data = { id: doc.id, ...doc.data() };
   return isPubliclyVisible(data) ? data : null;
 }
+
+// Task 8 brief'i sadece `.where('category','==',...).orderBy('date','desc').limit(count+1)`
+// öneriyordu — status filtresi yoktu. Bu, "İlgili Yazılar/Makaleler" widget'ında draft veya
+// henüz zamanı gelmemiş scheduled içeriklerin herkese açık sayfalarda sızmasına yol açardı;
+// Task 1'in ana liste/lookup fonksiyonlarında düzelttiği ile aynı sınıf regresyon. Burada da
+// isPubliclyVisible uygulanıyor.
+//
+// `.where('category','==',...).orderBy('date','desc')` birlikte kullanıldığında Firestore
+// composite index istiyor (brief bunu not etmişti); bu ortamda index oluşturma yetkisi
+// (Firestore Index Admin) service account'ta tanımlı değil, dolayısıyla index'i buradan
+// programatik olarak oluşturamadık ve Firebase Console'a interaktif erişimimiz yok. Bunun
+// yerine sorguyu index gerektirmeyecek şekilde yeniden kurduk: sadece `.where('category','==',...)`
+// (tekil-alan eşitlik sorgusu, Firestore'un otomatik oluşturduğu index yeterli), orderBy YOK.
+// Sıralama (tarihe göre yeniden eskiye) ve count'a kırpma, görünürlük filtresinden SONRA JS
+// tarafında yapılıyor. "İlgili yazılar" küçük ölçekli bir özellik olduğundan (bir kategoride
+// binlerce yazı beklenmiyor), tüm kategori eşleşenlerini çekip bellekte sıralamak güvenli ve
+// index gerektirmiyor — ana sayfalama (Task 1) için bu yaklaşım uygun olmazdı ama burada uygun.
+async function fetchRelated(collectionName, category, excludeSlug, count) {
+  if (!category) return [];
+  const db = admin.firestore();
+  const snapshot = await db.collection(collectionName)
+    .where('category', '==', category)
+    .get();
+  return snapshot.docs
+    .map(doc => ({ id: doc.id, ...doc.data() }))
+    .filter(isPubliclyVisible)
+    .filter(item => item.slug !== excludeSlug)
+    .sort((a, b) => {
+      const da = a.date ? new Date(a.date).getTime() : 0;
+      const db_ = b.date ? new Date(b.date).getTime() : 0;
+      return db_ - da;
+    })
+    .slice(0, count);
+}
+
+export async function getRelatedBlogs(category, excludeSlug, count = 3) {
+  return fetchRelated('blogs', category, excludeSlug, count);
+}
+
+export async function getRelatedArticles(category, excludeSlug, count = 3) {
+  return fetchRelated('articles', category, excludeSlug, count);
+}

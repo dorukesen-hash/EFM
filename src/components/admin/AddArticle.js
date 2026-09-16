@@ -36,7 +36,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
     image: "",
     author: "",
     date: "",
-    content: ""
+    content: "",
+    status: "draft"
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -55,7 +56,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
         image: editData.image || "",
         author: editData.author || "",
         date: editData.date || "",
-        content
+        content,
+        status: editData.status || "draft"
       });
       setRichText(plainOrHtmlToEditorHtml(content));
       setOpen(true);
@@ -130,7 +132,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
           image: "",
           author: "",
           date: "",
-          content: ""
+          content: "",
+          status: "draft"
         });
         setRichText("");
         setOpen(false);
@@ -155,7 +158,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
       image: "",
       author: "",
       date: "",
-      content: ""
+      content: "",
+      status: "draft"
     });
   };
 
@@ -257,6 +261,13 @@ export default function AddArticle({ editData, onClose, onSaved }) {
                 className=" border-1 border-primary/20 p-2 rounded"
                 required
               />
+              <div className="flex items-center space-x-4">
+                <label htmlFor="status" className="font-semibold">Durum</label>
+                <select id="status" name="status" value={form.status} onChange={handleChange} className="border-1 border-primary/20 p-2 rounded">
+                  <option value="draft">Taslak</option>
+                  <option value="published">Yayınlandı</option>
+                </select>
+              </div>
               <label className="font-semibold">İçerik</label>
               <TiptapEditor value={richText} onChange={handleRichTextChange} imageFolder="articles" />
                 <div className="w-full flex justify-center">

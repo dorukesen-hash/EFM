@@ -4,6 +4,17 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
+// Eski (Tiptap öncesi) düz metin makaleler için basit paragraf dönüştürücü;
+// içerik zaten HTML (Tiptap çıktısı) ise olduğu gibi kullanılır.
+function articleContentToHtml(content) {
+  if (!content) return "";
+  if (/<[a-z][\s\S]*>/i.test(content)) return content;
+  return content
+    .split(/\n{2,}/)
+    .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
+
 export default function ArticleDetailPage() {
     const { slug } = useParams();
     const [article, setArticle] = useState(null);
@@ -54,9 +65,13 @@ export default function ArticleDetailPage() {
                     </div>
                     <div className="flex-1">
                         <p className="text-base md:text-lg text-justify mb-6">{article.description}</p>
-                        <div className="text-base md:text-lg text-justify text-primary">
-                            {article.content}
-                        </div>
+                        {/* İçerik sadece admin panelinden (auth korumalı) giriliyor; herkese açık kullanıcı
+                            girdisi bu alana ulaşmıyor. Bu alan ileride dış/kullanıcı kaynaklı içerik alacaksa
+                            dangerouslySetInnerHTML kullanmadan önce bir sanitizer (örn. DOMPurify) eklenmeli. */}
+                        <div
+                            className="article-content text-base md:text-lg text-justify text-primary"
+                            dangerouslySetInnerHTML={{ __html: articleContentToHtml(article.content) }}
+                        />
                     </div>
                 </div>
             </div>

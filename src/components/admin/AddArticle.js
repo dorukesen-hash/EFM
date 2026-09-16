@@ -38,7 +38,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
     author: "",
     date: "",
     content: "",
-    status: "draft"
+    status: "draft",
+    scheduledAt: ""
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -59,7 +60,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
         author: editData.author || "",
         date: editData.date || "",
         content,
-        status: editData.status || "draft"
+        status: editData.status || "draft",
+        scheduledAt: editData.scheduledAt || ""
       });
       setRichText(plainOrHtmlToEditorHtml(content));
       setOpen(true);
@@ -116,6 +118,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
        // PUT'ta ise mevcut slug'ı koru
        const payload = {
          ...form,
+         scheduledAt: form.status === 'scheduled' && form.scheduledAt ? new Date(form.scheduledAt).toISOString() : null,
          ...(editData && { slug: editData.slug })
        };
        
@@ -135,7 +138,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
           author: "",
           date: "",
           content: "",
-          status: "draft"
+          status: "draft",
+          scheduledAt: ""
         });
         setRichText("");
         setOpen(false);
@@ -161,7 +165,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
       author: "",
       date: "",
       content: "",
-      status: "draft"
+      status: "draft",
+      scheduledAt: ""
     });
   };
 
@@ -268,8 +273,23 @@ export default function AddArticle({ editData, onClose, onSaved }) {
                 <select id="status" name="status" value={form.status} onChange={handleChange} className="border-1 border-primary/20 p-2 rounded">
                   <option value="draft">Taslak</option>
                   <option value="published">Yayınlandı</option>
+                  <option value="scheduled">Zamanlanmış</option>
                 </select>
               </div>
+              {form.status === 'scheduled' && (
+                <div className="flex items-center space-x-4">
+                  <label htmlFor="scheduledAt" className="font-semibold">Yayın Tarihi/Saati</label>
+                  <input
+                    id="scheduledAt"
+                    name="scheduledAt"
+                    type="datetime-local"
+                    value={form.scheduledAt}
+                    onChange={handleChange}
+                    className="border-1 border-primary/20 p-2 rounded"
+                    required
+                  />
+                </div>
+              )}
               <label className="font-semibold">İçerik</label>
               <TiptapEditor value={richText} onChange={handleRichTextChange} imageFolder="articles" />
                 <div className="w-full flex justify-center gap-4">

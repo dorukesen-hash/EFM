@@ -67,7 +67,8 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
     description: "",
     text: "",
     image: "",
-    status: "draft"
+    status: "draft",
+    scheduledAt: ""
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -89,7 +90,8 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
         description: editData.description || "",
         text: editData.text || "",
         image: editData.image || "",
-        status: editData.status || "draft"
+        status: editData.status || "draft",
+        scheduledAt: editData.scheduledAt || ""
       });
       // Eski Slate JSON içeriği HTML'e çevir, HTML string ise direkt kullan
       const text = editData.text || '';
@@ -152,6 +154,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
        const payload = {
          ...form,
          text: richText,
+         scheduledAt: form.status === 'scheduled' && form.scheduledAt ? new Date(form.scheduledAt).toISOString() : null,
          ...(editData && { slug: editData.slug })
        };
 
@@ -163,7 +166,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
        });
       const data = await res.json();
       if (res.ok) {
-        setForm({ title: "", date: "", category: "", description: "", text: "", image: "", status: "draft" });
+        setForm({ title: "", date: "", category: "", description: "", text: "", image: "", status: "draft", scheduledAt: "" });
         setOpen(false);
         if (onClose) onClose();
         if (onSaved) onSaved();
@@ -180,7 +183,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
   const handleOpen = () => {
     setOpen(true);
     setRichText('');
-    setForm({ title: "", date: "", category: "", description: "", text: "", image: "", status: "draft" });
+    setForm({ title: "", date: "", category: "", description: "", text: "", image: "", status: "draft", scheduledAt: "" });
   };
 
   return (
@@ -242,9 +245,24 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
                       <select id="status" name="status" value={form.status} onChange={handleChange} className=" border-1 border-primary/20 p-2 rounded">
                         <option value="draft">Taslak</option>
                         <option value="published">Yayınlandı</option>
+                        <option value="scheduled">Zamanlanmış</option>
                       </select>
                     </div>
                 </div>
+              {form.status === 'scheduled' && (
+                <div className="flex items-center space-x-4">
+                  <label htmlFor="scheduledAt" className="font-semibold">Yayın Tarihi/Saati</label>
+                  <input
+                    id="scheduledAt"
+                    name="scheduledAt"
+                    type="datetime-local"
+                    value={form.scheduledAt}
+                    onChange={handleChange}
+                    className="border-1 border-primary/20 p-2 rounded"
+                    required
+                  />
+                </div>
+              )}
               <div>
                 <label className="block mb-2 font-semibold">Kapak Görseli (opsiyonel)</label>
 

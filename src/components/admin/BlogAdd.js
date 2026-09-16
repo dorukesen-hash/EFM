@@ -58,6 +58,16 @@ function slateToHtml(nodes) {
   return nodes.map(nodeToHtml).join('');
 }
 
+// Firestore'daki ISO-UTC scheduledAt değerini <input type="datetime-local"> için
+// yerel saate çevirir (YYYY-MM-DDTHH:mm formatı, "Z" veya milisaniye içermez).
+function isoToLocalInput(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 
 export default function BlogAdd({ editData, onClose, onSaved }) {
   const [form, setForm] = useState({
@@ -93,7 +103,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
         text: editData.text || "",
         image: editData.image || "",
         status: editData.status || "draft",
-        scheduledAt: editData.scheduledAt || ""
+        scheduledAt: isoToLocalInput(editData.scheduledAt)
       });
       // Eski Slate JSON içeriği HTML'e çevir, HTML string ise direkt kullan
       const text = editData.text || '';

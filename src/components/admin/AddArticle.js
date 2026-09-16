@@ -16,6 +16,16 @@ function plainOrHtmlToEditorHtml(content) {
     .join("");
 }
 
+// Firestore'daki ISO-UTC scheduledAt değerini <input type="datetime-local"> için
+// yerel saate çevirir (YYYY-MM-DDTHH:mm formatı, "Z" veya milisaniye içermez).
+function isoToLocalInput(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 const localImageOptions = [
   "/assets/areas/aile.jpg",
   "/assets/areas/bilisim.jpg",
@@ -63,7 +73,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
         date: editData.date || "",
         content,
         status: editData.status || "draft",
-        scheduledAt: editData.scheduledAt || ""
+        scheduledAt: isoToLocalInput(editData.scheduledAt)
       });
       setRichText(plainOrHtmlToEditorHtml(content));
       fetch(`/api/admin/articles/history?slug=${editData.slug}`, { credentials: 'include' })

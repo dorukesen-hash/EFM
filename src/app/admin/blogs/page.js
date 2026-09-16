@@ -103,7 +103,12 @@ export default function BlogsAdminPage() {
                       </div>
                       <div className="absolute bg-primary shadow-xl w-full bottom-0 px-6 py-1 text-white/80 text-sm flex justify-between items-center">
                         <span>{blog.date}</span>
-                        <span>{blog.category}</span>
+                        <span className="flex items-center gap-2">
+                          <span className={`text-xs px-2 py-0.5 rounded ${blog.status === 'published' ? 'bg-green-500' : 'bg-yellow-500'}`}>
+                            {blog.status === 'published' ? 'Yayında' : 'Taslak'}
+                          </span>
+                          {blog.category}
+                        </span>
                       </div>
                       <div className="absolute top-0 right-0 flex gap-2 p-2 opacity-0 group-hover:opacity-100 transition">
                         <button

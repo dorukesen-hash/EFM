@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 export default function Footer() {
     const [articles, setArticles] = useState([]);
     useEffect(() => {
-        fetch("/api/articles")
+        fetch("/api/articles?limit=5")
             .then(res => res.json())
             .then(data => setArticles(data.articles || []));
     }, []);

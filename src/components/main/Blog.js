@@ -8,7 +8,7 @@ export default function Blog() {
     const [current, setCurrent] = useState(0);
 
     useEffect(() => {
-        fetch("/api/articles")
+        fetch("/api/articles?limit=50")
             .then(res => res.json())
             .then(data => setArticles(data.articles || []));
     }, []);

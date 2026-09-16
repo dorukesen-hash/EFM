@@ -57,7 +57,15 @@ export async function PUT(req) {
       return NextResponse.json({ error: 'Zamanlanmış yayın için tarih/saat gerekli.' }, { status: 400 });
     }
     const db = admin.firestore();
-    await db.collection('articles').doc(slug).set({
+    const docRef = db.collection('articles').doc(slug);
+    const existingDoc = await docRef.get();
+    if (existingDoc.exists) {
+      await docRef.collection('history').add({
+        ...existingDoc.data(),
+        savedAt: new Date().toISOString()
+      });
+    }
+    await docRef.set({
       slug,
       title,
       description,

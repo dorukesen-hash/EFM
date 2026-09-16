@@ -14,9 +14,18 @@ export default function BlogLoadMore({ initialBlogs, initialNextCursor }) {
     setLoading(true);
     try {
       const res = await fetch(`/api/blogs?limit=9&cursor=${encodeURIComponent(nextCursor)}`);
+      if (!res.ok) {
+        // Geçici bir hata (500 vs.) mevcut nextCursor'ı null'a çevirmemeli — aksi halde
+        // "Daha Fazla Yükle" butonu kalıcı olarak kaybolur ve kullanıcı sayfayı
+        // yenilemeden tekrar deneyemez. Cursor'ı olduğu gibi bırakıp sessizce çık.
+        console.error("Bloglar yüklenemedi:", res.status);
+        return;
+      }
       const data = await res.json();
       setBlogs(prev => [...prev, ...(data.blogs || [])]);
       setNextCursor(data.nextCursor || null);
+    } catch (err) {
+      console.error("Bloglar yüklenemedi:", err);
     } finally {
       setLoading(false);
     }

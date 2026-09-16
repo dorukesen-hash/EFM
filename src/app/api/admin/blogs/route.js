@@ -95,7 +95,11 @@ export async function DELETE(req) {
     if (!slug) return NextResponse.json({ error: 'slug gerekli.' }, { status: 400 });
 
     const db = admin.firestore();
-    await db.collection('blogs').doc(slug).delete();
+    // Firestore alt koleksiyonları (örn. history) parent doc silinince otomatik silinmez;
+    // recursiveDelete ile birlikte silinerek slug tekrar kullanıldığında eski geçmişin
+    // yeni içeriğe sızması engellenir.
+    const docRef = db.collection('blogs').doc(slug);
+    await db.recursiveDelete(docRef);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

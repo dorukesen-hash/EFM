@@ -102,7 +102,11 @@ export async function DELETE(req) {
     }
 
     const db = admin.firestore();
-    await db.collection('articles').doc(slug).delete();
+    // Firestore alt koleksiyonları (örn. history) parent doc silinince otomatik silinmez;
+    // recursiveDelete ile birlikte silinerek slug tekrar kullanıldığında eski geçmişin
+    // yeni içeriğe sızması engellenir.
+    const docRef = db.collection('articles').doc(slug);
+    await db.recursiveDelete(docRef);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

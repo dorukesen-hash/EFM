@@ -288,8 +288,8 @@ export default function AddArticle({ editData, onClose, onSaved }) {
               subtitle={form.description}
               meta={[form.author, form.date]}
               image={form.image}
-              contentHtml={form.content}
-              isRichText={false}
+              contentHtml={richText}
+              isRichText={true}
             />
           </div>
         </div>

@@ -1,0 +1,71 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+
+export default function BlogLoadMore({ initialBlogs, initialNextCursor }) {
+  const [blogs, setBlogs] = useState(initialBlogs);
+  const [nextCursor, setNextCursor] = useState(initialNextCursor);
+  const [loading, setLoading] = useState(false);
+
+  const loadMore = async () => {
+    if (!nextCursor || loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/blogs?limit=9&cursor=${encodeURIComponent(nextCursor)}`);
+      const data = await res.json();
+      setBlogs(prev => [...prev, ...(data.blogs || [])]);
+      setNextCursor(data.nextCursor || null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {blogs.map((blog) => (
+          <Link
+            key={blog.slug}
+            href={`/pages/blog/${blog.slug}`}
+            className="group border-1 border-gray-300 relative flex-col flex gap-2 bg-foreground rounded-sm overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105"
+          >
+            {blog.image && (
+              <Image
+                src={blog.image}
+                alt={blog.title}
+                width={400}
+                height={250}
+                className="w-full h-48 object-cover"
+              />
+            )}
+            <div className={`flex flex-col items-center w-full px-6 overflow-hidden ${blog.image ? 'pt-4' : 'pt-12'}`}>
+              <h2 className="text-xl font-bold text-primary mb-2 group-hover:text-secondary transition-colors duration-300">
+                {blog.title}
+              </h2>
+              <div className="text-primary/80 pb-16">
+                <p className="line-clamp-5 text-justify">{blog.description}</p>
+              </div>
+            </div>
+            <div className="absolute bg-primary shadow-xl w-full bottom-0 px-6 py-1 text-white/80 text-sm flex justify-between items-center">
+              <span>{blog.date}</span>
+              <span>{blog.category}</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+      {nextCursor && (
+        <div className="w-full flex justify-center mt-10">
+          <button
+            onClick={loadMore}
+            disabled={loading}
+            className="bg-primary text-white py-2 px-6 rounded font-semibold hover:bg-secondary transition disabled:opacity-50"
+          >
+            {loading ? "Yükleniyor..." : "Daha Fazla Yükle"}
+          </button>
+        </div>
+      )}
+    </>
+  );
+}

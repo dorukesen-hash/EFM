@@ -65,7 +65,8 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
     category: "",
     description: "",
     text: "",
-    image: ""
+    image: "",
+    status: "draft"
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -85,7 +86,8 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
         category: editData.category || "",
         description: editData.description || "",
         text: editData.text || "",
-        image: editData.image || ""
+        image: editData.image || "",
+        status: editData.status || "draft"
       });
       // Eski Slate JSON içeriği HTML'e çevir, HTML string ise direkt kullan
       const text = editData.text || '';
@@ -159,7 +161,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
        });
       const data = await res.json();
       if (res.ok) {
-        setForm({ title: "", date: "", category: "", description: "", text: "", image: "" });
+        setForm({ title: "", date: "", category: "", description: "", text: "", image: "", status: "draft" });
         setOpen(false);
         if (onClose) onClose();
         if (onSaved) onSaved();
@@ -176,7 +178,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
   const handleOpen = () => {
     setOpen(true);
     setRichText('');
-    setForm({ title: "", date: "", category: "", description: "", text: "", image: "" });
+    setForm({ title: "", date: "", category: "", description: "", text: "", image: "", status: "draft" });
   };
 
   return (
@@ -231,6 +233,13 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
                         {categories.map((cat) => (
                           <option key={cat} value={cat}>{cat}</option>
                         ))}
+                      </select>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <label htmlFor="status" className="font-semibold">Durum</label>
+                      <select id="status" name="status" value={form.status} onChange={handleChange} className=" border-1 border-primary/20 p-2 rounded">
+                        <option value="draft">Taslak</option>
+                        <option value="published">Yayınlandı</option>
                       </select>
                     </div>
                 </div>

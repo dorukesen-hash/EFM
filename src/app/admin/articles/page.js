@@ -146,9 +146,26 @@ export default function ArticlesAdminPage() {
                        <div className="absolute bg-primary shadow-xl w-full bottom-0 px-6 py-1 text-white/80 text-sm flex justify-between items-center">
                          <span>{article.author}</span>
                          <span className="flex items-center gap-2">
-                           <span className={`text-xs px-2 py-0.5 rounded ${article.status === 'published' ? 'bg-green-500' : 'bg-yellow-500'}`}>
-                             {article.status === 'published' ? 'Yayında' : 'Taslak'}
-                           </span>
+                           {(() => {
+                             // isPubliclyVisible() (src/app/api/articles/route.js) ile aynı mantık:
+                             // status yoksa veya published ise yayında; scheduled ise zamanı geçmiş mi bak.
+                             const s = article.status;
+                             let cls = 'bg-yellow-500', label = 'Taslak';
+                             if (s === undefined || s === 'published') {
+                               cls = 'bg-green-500'; label = 'Yayında';
+                             } else if (s === 'scheduled') {
+                               if (article.scheduledAt && new Date(article.scheduledAt).getTime() <= Date.now()) {
+                                 cls = 'bg-green-500'; label = 'Yayında (zamanlanmış)';
+                               } else {
+                                 cls = 'bg-blue-500'; label = 'Zamanlanmış';
+                               }
+                             }
+                             return (
+                               <span className={`text-xs px-2 py-0.5 rounded ${cls}`}>
+                                 {label}
+                               </span>
+                             );
+                           })()}
                            {article.date}
                          </span>
                        </div>

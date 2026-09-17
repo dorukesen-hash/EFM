@@ -50,9 +50,6 @@ export function slugify(text) {
   slug = slug.split(/\s+/).filter(Boolean).join('-');
   slug = slug.replace(/-+/g, '-');
 
-  // İlk 3 kelimeyi al
-  slug = slug.split('-').slice(0, 3).join('-');
-
   // Başlayan/bitişi tire işareti kaldır
   slug = slug.replace(/^-+|-+$/g, '');
 

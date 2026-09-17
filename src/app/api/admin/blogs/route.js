@@ -114,7 +114,12 @@ export async function GET(req) {
 
     const db = admin.firestore();
     const snapshot = await db.collection('blogs').get();
-    const blogs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Eski kayıtların bir kısmında slug alanı yok; admin listesi checkbox/silme
+    // işlemlerini blog.slug ile anahtarlıyor, eksikse doküman ID'sine düş.
+    const blogs = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return { id: doc.id, ...data, slug: data.slug || doc.id };
+    });
     return NextResponse.json({ blogs }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

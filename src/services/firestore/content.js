@@ -19,6 +19,17 @@ function safeDecode(slug) {
   }
 }
 
+// Eski kayıtların bir kısmı `slug` alanı olmadan oluşturulmuş (editör/format
+// değişikliklerinden önce eklenmiş). `slug` eksikse liste/detay linkleri
+// `article.slug`'a dayandığı için `undefined` olur (`/pages/article/undefined`).
+// Firestore doküman ID'si her zaman var ve `getArticleBySlug`/`getBlogBySlug` zaten
+// doküman ID'siyle arama yaptığı için, eksik `slug`'ı doküman ID'sine düşürmek
+// (fallback) veriyi taşımadan linkleri kalıcı olarak düzeltir.
+function toItem(doc) {
+  const data = doc.data();
+  return { id: doc.id, ...data, slug: data.slug || doc.id };
+}
+
 // Sayfalama cursor'ı sadece `date` alanından oluşursa, aynı `date` değerine sahip
 // (örn. aynı gün yayınlanmış) birden fazla doküman varsa Firestore'un
 // startAfter(date) çağrısı o tarihe sahip TÜM dokümanları atlar — sadece cursor'ın
@@ -93,7 +104,7 @@ async function fetchVisiblePage(db, collectionName, { limit, cursor }) {
       break;
     }
 
-    const rawDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const rawDocs = snapshot.docs.map(toItem);
     let filledInThisBatch = false;
     for (const item of rawDocs) {
       cursorParts = { date: item.date, id: item.id };
@@ -131,7 +142,7 @@ export async function getAllArticles() {
   const db = admin.firestore();
   const snapshot = await db.collection('articles').orderBy('date', 'desc').get();
   return snapshot.docs
-    .map(doc => ({ id: doc.id, ...doc.data() }))
+    .map(toItem)
     .filter(isPubliclyVisible);
 }
 
@@ -140,7 +151,7 @@ export async function getArticleBySlug(slug) {
   const db = admin.firestore();
   const doc = await db.collection('articles').doc(safeDecode(slug)).get();
   if (!doc.exists) return null;
-  const data = { id: doc.id, ...doc.data() };
+  const data = toItem(doc);
   return isPubliclyVisible(data) ? data : null;
 }
 
@@ -154,7 +165,7 @@ export async function getAllBlogs() {
   const db = admin.firestore();
   const snapshot = await db.collection('blogs').orderBy('date', 'desc').get();
   return snapshot.docs
-    .map(doc => ({ id: doc.id, ...doc.data() }))
+    .map(toItem)
     .filter(isPubliclyVisible);
 }
 
@@ -163,7 +174,7 @@ export async function getBlogBySlug(slug) {
   const db = admin.firestore();
   const doc = await db.collection('blogs').doc(safeDecode(slug)).get();
   if (!doc.exists) return null;
-  const data = { id: doc.id, ...doc.data() };
+  const data = toItem(doc);
   return isPubliclyVisible(data) ? data : null;
 }
 
@@ -190,7 +201,7 @@ async function fetchRelated(collectionName, category, excludeSlug, count) {
     .where('category', '==', category)
     .get();
   return snapshot.docs
-    .map(doc => ({ id: doc.id, ...doc.data() }))
+    .map(toItem)
     .filter(isPubliclyVisible)
     .filter(item => item.slug !== excludeSlug)
     .sort((a, b) => {

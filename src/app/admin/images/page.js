@@ -2,8 +2,14 @@
 import { useState } from 'react';
 import ImageUpload from '@/components/admin/ImageUpload';
 
+const FOLDERS = [
+  { key: 'articles', label: 'Makaleler' },
+  { key: 'blogs', label: 'Bloglar' },
+];
+
 export default function ImagesPage() {
   const [uploadedImage, setUploadedImage] = useState(null);
+  const [folder, setFolder] = useState('articles');
 
   const handleImageUpload = (image) => {
     setUploadedImage(image);
@@ -14,6 +20,23 @@ export default function ImagesPage() {
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-800 mb-2">📸 Resimleri Yönet</h1>
         <p className="text-lg text-gray-600">Makale ve blog yazılarınız için resimleri yükleyin ve yönetin</p>
+      </div>
+
+      {/* Klasör Seçici */}
+      <div className="flex justify-center gap-2 mb-8">
+        {FOLDERS.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setFolder(key)}
+            className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+              folder === key
+                ? 'bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow-lg'
+                : 'bg-white text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* Yüklenen Resim Bilgisi */}
@@ -47,7 +70,7 @@ export default function ImagesPage() {
       )}
 
       {/* ImageUpload Komponenti */}
-      <ImageUpload onImageUpload={handleImageUpload} folder="articles" />
+      <ImageUpload key={folder} onImageUpload={handleImageUpload} folder={folder} />
     </div>
   );
 }

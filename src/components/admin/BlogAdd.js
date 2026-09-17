@@ -3,9 +3,26 @@
 import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import Image from "next/image";
 import TiptapEditor from "../tiptap/TiptapEditor";
+import { listImages } from "@/services/firebase/firebaseStorage";
+import { CATEGORIES as categories } from "@/utils/categories";
+import PreviewModal from "./PreviewModal";
 
-const categories = ["Hukuk", "Teknoloji", "Güncel", "Eğitim", "Sağlık"];
+// Blog kapak görseli için yerel görsel seçenekleri (AddArticle.js ile aynı havuz)
+const localImageOptions = [
+  "/assets/areas/aile.jpg",
+  "/assets/areas/bilisim.jpg",
+  "/assets/areas/bosanma.jpeg",
+  "/assets/areas/ceza.jpg",
+  "/assets/areas/idare.jpg",
+  "/assets/areas/kvkk.jpg",
+  "/assets/areas/miras.jpeg",
+  "/assets/areas/saglık.jpg",
+  "/assets/areas/sigorta.jpg",
+  "/assets/areas/tazminat.jpg",
+  "/assets/areas/ticaret.webp"
+];
 
 // Eski Slate JSON → HTML (geriye dönük uyumluluk)
 function escapeHtml(t) {
@@ -40,6 +57,16 @@ function slateToHtml(nodes) {
   return nodes.map(nodeToHtml).join('');
 }
 
+// Firestore'daki ISO-UTC scheduledAt değerini <input type="datetime-local"> için
+// yerel saate çevirir (YYYY-MM-DDTHH:mm formatı, "Z" veya milisaniye içermez).
+function isoToLocalInput(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 
 export default function BlogAdd({ editData, onClose, onSaved }) {
   const [form, setForm] = useState({
@@ -47,7 +74,10 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
     date: "",
     category: "",
     description: "",
-    text: ""
+    text: "",
+    image: "",
+    status: "draft",
+    scheduledAt: ""
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -56,6 +86,12 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
   const [richText, setRichText] = useState('');
   const [error, setError] = useState("");
 
+  const [storageImages, setStorageImages] = useState([]);
+  const [loadingImages, setLoadingImages] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
+
   useEffect(() => {
     if (editData) {
       setForm({
@@ -63,17 +99,44 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
         date: editData.date || "",
         category: editData.category || "",
         description: editData.description || "",
-        text: editData.text || ""
+        text: editData.text || "",
+        image: editData.image || "",
+        status: editData.status || "draft",
+        scheduledAt: isoToLocalInput(editData.scheduledAt)
       });
       // Eski Slate JSON içeriği HTML'e çevir, HTML string ise direkt kullan
       const text = editData.text || '';
       setRichText(Array.isArray(text) ? slateToHtml(text) : text);
+      fetch(`/api/admin/blogs/history?slug=${editData.slug}`, { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => setHistory(data.history || []))
+        .catch(() => setHistory([]));
       setOpen(true);
     } else {
       setRichText('');
       setOpen(false);
     }
   }, [editData]);
+
+  // Firebase Storage'dan blog klasöründeki resimleri yükle
+  useEffect(() => {
+    if (open && storageImages.length === 0) {
+      loadStorageImages();
+    }
+  }, [open]);
+
+  const loadStorageImages = async () => {
+    setLoadingImages(true);
+    try {
+      const images = await listImages('blogs');
+      setStorageImages(images);
+    } catch (err) {
+      console.error('Resimleri yüklemede hata:', err);
+      toast.warning('Firebase Storage resimleri yüklenemedi');
+    } finally {
+      setLoadingImages(false);
+    }
+  };
 
   const handleRichTextChange = (html) => {
     setRichText(html);
@@ -86,6 +149,13 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
 
    const handleSubmit = async (e) => {
      e.preventDefault();
+
+     const plainText = richText.replace(/<[^>]*>/g, "").trim();
+     if (!plainText && !/<img/i.test(richText)) {
+       toast.error("İçerik boş olamaz.");
+       return;
+     }
+
      setLoading(true);
      setError("");
      setSuccess(false);
@@ -99,6 +169,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
        const payload = {
          ...form,
          text: richText,
+         scheduledAt: form.status === 'scheduled' && form.scheduledAt ? new Date(form.scheduledAt).toISOString() : null,
          ...(editData && { slug: editData.slug })
        };
 
@@ -110,7 +181,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
        });
       const data = await res.json();
       if (res.ok) {
-        setForm({ title: "", date: "", category: "", description: "", text: "" });
+        setForm({ title: "", date: "", category: "", description: "", text: "", image: "", status: "draft", scheduledAt: "" });
         setOpen(false);
         if (onClose) onClose();
         if (onSaved) onSaved();
@@ -127,7 +198,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
   const handleOpen = () => {
     setOpen(true);
     setRichText('');
-    setForm({ title: "", date: "", category: "", description: "", text: "" });
+    setForm({ title: "", date: "", category: "", description: "", text: "", image: "", status: "draft", scheduledAt: "" });
   };
 
   return (
@@ -184,16 +255,128 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
                         ))}
                       </select>
                     </div>
+                    <div className="flex items-center space-x-4">
+                      <label htmlFor="status" className="font-semibold">Durum</label>
+                      <select id="status" name="status" value={form.status} onChange={handleChange} className=" border-1 border-primary/20 p-2 rounded">
+                        <option value="draft">Taslak</option>
+                        <option value="published">Yayınlandı</option>
+                        <option value="scheduled">Zamanlanmış</option>
+                      </select>
+                    </div>
                 </div>
+              {form.status === 'scheduled' && (
+                <div className="flex items-center space-x-4">
+                  <label htmlFor="scheduledAt" className="font-semibold">Yayın Tarihi/Saati</label>
+                  <input
+                    id="scheduledAt"
+                    name="scheduledAt"
+                    type="datetime-local"
+                    value={form.scheduledAt}
+                    onChange={handleChange}
+                    className="border-1 border-primary/20 p-2 rounded"
+                    required
+                  />
+                </div>
+              )}
+              <div>
+                <label className="block mb-2 font-semibold">Kapak Görseli (opsiyonel)</label>
+
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 mb-2">📁 Yerel Görseller</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {localImageOptions.map((img) => (
+                      <Image
+                        key={img}
+                        onClick={() => setForm({ ...form, image: img })}
+                        src={img}
+                        alt={img}
+                        width={96}
+                        height={96}
+                        className={`w-24 h-24 object-cover rounded cursor-pointer border ${form.image === img ? 'border-4 border-secondary' : 'border-gray-300'}`}
+                        style={{ objectFit: 'cover' }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {storageImages.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm text-gray-600">☁️ Firebase Storage</p>
+                      <button
+                        type="button"
+                        onClick={loadStorageImages}
+                        className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                      >
+                        🔄 Yenile
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {storageImages.map((img) => (
+                        <div
+                          key={img.path}
+                          onClick={() => setForm({ ...form, image: img.url })}
+                          className={`relative w-24 h-24 rounded cursor-pointer border ${form.image === img.url ? 'border-4 border-secondary' : 'border-gray-300'} overflow-hidden`}
+                        >
+                          <Image src={img.url} alt={img.name} fill className="object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {loadingImages && (
+                  <p className="text-sm text-gray-500 mt-2">Resimleri yüklüyor...</p>
+                )}
+
+                {!loadingImages && storageImages.length === 0 && (
+                  <p className="text-sm text-gray-500 mt-2">
+                    Henüz resim yüklenmemiş. <a href="/admin/images" className="text-blue-500 hover:underline">Resimler</a> sekmesinden resim yükleyin.
+                  </p>
+                )}
+              </div>
               <label className="font-semibold">İçerik</label>
-              <TiptapEditor value={richText} onChange={handleRichTextChange} />
+              <TiptapEditor value={richText} onChange={handleRichTextChange} imageFolder="blogs" />
               {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-                <div className="w-full flex justify-center">
+                <div className="w-full flex justify-center gap-4">
+                  <button type="button" onClick={() => setPreviewOpen(true)} className="max-w-[200px] min-w-[150px] bg-white border border-primary text-primary py-2 rounded font-semibold hover:bg-primary/10 cursor-pointer transition">
+                    Önizle
+                  </button>
+                  {editData && history.length > 0 && (
+                    <button type="button" onClick={() => setHistoryOpen(true)} className="max-w-[200px] min-w-[150px] bg-white border border-primary text-primary py-2 rounded font-semibold hover:bg-primary/10 cursor-pointer transition">
+                      Geçmiş ({history.length})
+                    </button>
+                  )}
                   <button type="submit" disabled={loading} className="max-w-[300px] min-w-[200px]  bg-primary text-white py-2 rounded font-semibold hover:bg-secondary cursor-pointer  transition">
                     {loading ? (editData ? "Güncelleniyor..." : "Kaydediliyor...") : (editData ? "Blog Güncelle" : "Blog Ekle")}
                   </button>
                 </div>
             </form>
+            <PreviewModal
+              open={previewOpen}
+              onClose={() => setPreviewOpen(false)}
+              title={form.title}
+              subtitle={form.description}
+              meta={[form.category, form.date]}
+              contentHtml={richText}
+              isRichText={true}
+            />
+            {historyOpen && (
+              <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[70]">
+                <div className="max-w-lg w-full mx-auto p-6 bg-white rounded shadow relative max-h-[80vh] overflow-scroll">
+                  <button onClick={() => setHistoryOpen(false)} className="absolute top-2 right-2 text-gray-500 hover:text-primary" type="button">X</button>
+                  <h3 className="text-xl font-bold mb-4">Geçmiş Sürümler</h3>
+                  <ul className="space-y-2">
+                    {history.map(h => (
+                      <li key={h.id} className="border border-primary/10 p-2 rounded">
+                        <p className="text-sm text-primary/60">{new Date(h.savedAt).toLocaleString('tr-TR')}</p>
+                        <p className="font-semibold">{h.title}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

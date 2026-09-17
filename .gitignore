@@ -23,6 +23,16 @@
 # misc
 .DS_Store
 *.pem
+.output.txt
+
+# IDE
+/.idea/
+
+# stale duplicate project copy (contains its own node_modules/.next/.env)
+/efm/
+
+# isolated worktrees for plan execution
+/.worktrees/
 
 # debug
 npm-debug.log*
@@ -32,6 +42,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+vercel.env
 
 # vercel
 .vercel

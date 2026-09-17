@@ -1,62 +1,21 @@
 import { NextResponse } from 'next/server';
 import admin from '../../../../services/firebase/firebaseAdmin';
 import { slugify } from '../../../../utils/slugify';
-
-async function requireAdmin(req) {
-  try {
-    // Cookie'den session-token'ı al
-    const cookies = req.headers.get('cookie') || '';
-    
-    // NextAuth session'ını /api/auth/session endpoint'ından al
-    // Cookie'ler otomatik gönderilir çünkü req'den geliyor
-    const baseUrl = new URL(req.url).origin;
-    const sessionRes = await fetch(`${baseUrl}/api/auth/session`, {
-      headers: {
-        cookie: cookies,
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
-        'Pragma': 'no-cache',
-      },
-    });
-
-    if (!sessionRes.ok) {
-      return null;
-    }
-
-    const session = await sessionRes.json();
-    if (!session?.user) {
-      return null;
-    }
-
-    // Token'da isAdmin varsa kontrol et
-    if (session.user.isAdmin === true) {
-      return { uid: session.user.id };
-    }
-
-    // Eğer session'da isAdmin eksikse, Firestore'dan kontrol et
-    if (session.user.id) {
-      const db = admin.firestore();
-      const doc = await db.collection('users').doc(session.user.id).get();
-      if (doc.exists && doc.data().isAdmin) {
-        return { uid: session.user.id };
-      }
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Admin auth error:', error);
-    return null;
-  }
-}
+import { requireAdmin } from '../../../../services/auth/requireAdmin';
 
 export async function POST(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { title, description, image, author, date, content } = body;
-    if (!title || !description || !image || !author || !date || !content) {
+    const { title, description, image, author, date, category, content, status, scheduledAt } = body;
+    if (!title || !description || !image || !author || !date || !category || !content) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
+    }
+    const finalStatus = ['published', 'scheduled'].includes(status) ? status : 'draft';
+    if (finalStatus === 'scheduled' && !scheduledAt) {
+      return NextResponse.json({ error: 'Zamanlanmış yayın için tarih/saat gerekli.' }, { status: 400 });
     }
 
     // Slug'ı title'dan otomatik oluştur
@@ -73,7 +32,10 @@ export async function POST(req) {
       image,
       author,
       date,
-      content
+      category,
+      content,
+      status: finalStatus,
+      scheduledAt: finalStatus === 'scheduled' ? scheduledAt : null
     });
     return NextResponse.json({ success: true, id: slug }, { status: 200 });
   } catch (error) {
@@ -83,23 +45,38 @@ export async function POST(req) {
 
 export async function PUT(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { slug, title, description, image, author, date, content } = body;
-    if (!slug || !title || !description || !image || !author || !date || !content) {
+    const { slug, title, description, image, author, date, category, content, status, scheduledAt } = body;
+    if (!slug || !title || !description || !image || !author || !date || !category || !content) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
+    const finalStatus = ['published', 'scheduled'].includes(status) ? status : 'draft';
+    if (finalStatus === 'scheduled' && !scheduledAt) {
+      return NextResponse.json({ error: 'Zamanlanmış yayın için tarih/saat gerekli.' }, { status: 400 });
+    }
     const db = admin.firestore();
-    await db.collection('articles').doc(slug).set({
+    const docRef = db.collection('articles').doc(slug);
+    const existingDoc = await docRef.get();
+    if (existingDoc.exists) {
+      await docRef.collection('history').add({
+        ...existingDoc.data(),
+        savedAt: new Date().toISOString()
+      });
+    }
+    await docRef.set({
       slug,
       title,
       description,
       image,
       author,
       date,
-      content
+      category,
+      content,
+      status: finalStatus,
+      scheduledAt: finalStatus === 'scheduled' ? scheduledAt : null
     }, { merge: true });
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
@@ -109,7 +86,7 @@ export async function PUT(req) {
 
 export async function DELETE(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     // URL'den slug'ı al
@@ -127,7 +104,11 @@ export async function DELETE(req) {
     }
 
     const db = admin.firestore();
-    await db.collection('articles').doc(slug).delete();
+    // Firestore alt koleksiyonları (örn. history) parent doc silinince otomatik silinmez;
+    // recursiveDelete ile birlikte silinerek slug tekrar kullanıldığında eski geçmişin
+    // yeni içeriğe sızması engellenir.
+    const docRef = db.collection('articles').doc(slug);
+    await db.recursiveDelete(docRef);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -137,12 +118,20 @@ export async function DELETE(req) {
 // Tüm makaleleri listeleme
 export async function GET(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const db = admin.firestore();
     const snapshot = await db.collection('articles').get();
     const articles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // En güncel makale ilk sırada gösterilsin diye tarihe göre (yeniden eskiye) sırala
+    articles.sort((a, b) => {
+      const da = a.date ? new Date(a.date).getTime() : 0;
+      const db_ = b.date ? new Date(b.date).getTime() : 0;
+      return db_ - da;
+    });
+
     return NextResponse.json({ articles }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

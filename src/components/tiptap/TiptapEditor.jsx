@@ -5,7 +5,10 @@ import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle, FontSize } from '@tiptap/extension-text-style';
-import { useEffect } from 'react';
+import TiptapImage from '@tiptap/extension-image';
+import Link from '@tiptap/extension-link';
+import { useEffect, useState } from 'react';
+import { uploadImage } from '@/services/firebase/firebaseStorage';
 
 const FONT_SIZES = ['12', '14', '16', '18', '20', '24', '28', '32'];
 
@@ -28,14 +31,22 @@ function Divider() {
   return <div className="w-px h-5 bg-primary/20 mx-1" />;
 }
 
-export default function TiptapEditor({ value = '', onChange, readOnly = false }) {
+export default function TiptapEditor({ value = '', onChange, readOnly = false, imageFolder = 'articles' }) {
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ history: true }),
+      StarterKit.configure({ history: true, link: false }),
       Underline,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       TextStyle,
       FontSize,
+      TiptapImage.configure({ HTMLAttributes: { class: 'tiptap-image' } }),
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        HTMLAttributes: { class: 'tiptap-link' },
+      }),
     ],
     content: value || '<p></p>',
     editable: !readOnly,
@@ -63,6 +74,37 @@ export default function TiptapEditor({ value = '', onChange, readOnly = false })
   if (readOnly) {
     return <EditorContent editor={editor} />;
   }
+
+  const handleImageButtonClick = () => {
+    document.getElementById('tiptap-image-input')?.click();
+  };
+
+  const handleImageFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const uploaded = await uploadImage(file, imageFolder);
+      editor.chain().focus().setImage({ src: uploaded.url }).run();
+    } catch (err) {
+      console.error('Tiptap resim yükleme hatası:', err);
+      alert('Resim yüklenemedi: ' + (err.message || 'Bilinmeyen hata'));
+    } finally {
+      setUploadingImage(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleLinkButtonClick = () => {
+    const previousUrl = editor.getAttributes('link').href || '';
+    const url = window.prompt("Bağlantı URL'si (boş bırakıp onaylarsan link kaldırılır):", previousUrl);
+    if (url === null) return;
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+  };
 
   const currentFontSize = editor.getAttributes('textStyle').fontSize || '';
 
@@ -139,6 +181,22 @@ export default function TiptapEditor({ value = '', onChange, readOnly = false })
 
         <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive('blockquote')} title="Alıntı">
           "
+        </ToolbarButton>
+
+        <Divider />
+
+        <input
+          id="tiptap-image-input"
+          type="file"
+          accept="image/*"
+          onChange={handleImageFileChange}
+          className="hidden"
+        />
+        <ToolbarButton onClick={handleImageButtonClick} active={false} title="Resim Ekle">
+          {uploadingImage ? '⏳' : '🖼️'}
+        </ToolbarButton>
+        <ToolbarButton onClick={handleLinkButtonClick} active={editor.isActive('link')} title="Bağlantı Ekle/Düzenle">
+          🔗
         </ToolbarButton>
       </div>
 

@@ -1,63 +1,22 @@
 import { NextResponse } from 'next/server';
 import admin from '../../../../services/firebase/firebaseAdmin';
 import { slugify } from '../../../../utils/slugify';
-
-async function requireAdmin(req) {
-  try {
-    // Cookie'den session-token'ı al
-    const cookies = req.headers.get('cookie') || '';
-    
-    // NextAuth session'ını /api/auth/session endpoint'ından al
-    // Cookie'ler otomatik gönderilir çünkü req'den geliyor
-    const baseUrl = new URL(req.url).origin;
-    const sessionRes = await fetch(`${baseUrl}/api/auth/session`, {
-      headers: {
-        cookie: cookies,
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
-        'Pragma': 'no-cache',
-      },
-    });
-
-    if (!sessionRes.ok) {
-      return null;
-    }
-
-    const session = await sessionRes.json();
-    if (!session?.user) {
-      return null;
-    }
-
-    // Token'da isAdmin varsa kontrol et
-    if (session.user.isAdmin === true) {
-      return { uid: session.user.id };
-    }
-
-    // Eğer session'da isAdmin eksikse, Firestore'dan kontrol et
-    if (session.user.id) {
-      const db = admin.firestore();
-      const doc = await db.collection('users').doc(session.user.id).get();
-      if (doc.exists && doc.data().isAdmin) {
-        return { uid: session.user.id };
-      }
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Admin auth error:', error);
-    return null;
-  }
-}
+import { requireAdmin } from '../../../../services/auth/requireAdmin';
 
 // Blog ekleme
 export async function POST(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { title, date, category, description, text } = body;
+    const { title, date, category, description, text, image, status, scheduledAt } = body;
     if (!title || !date || !category || !description || !text) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
+    }
+    const finalStatus = ['published', 'scheduled'].includes(status) ? status : 'draft';
+    if (finalStatus === 'scheduled' && !scheduledAt) {
+      return NextResponse.json({ error: 'Zamanlanmış yayın için tarih/saat gerekli.' }, { status: 400 });
     }
 
     // Slug'ı title'dan otomatik oluştur
@@ -73,7 +32,10 @@ export async function POST(req) {
       date,
       category,
       description,
-      text
+      text,
+      image: image || '',
+      status: finalStatus,
+      scheduledAt: finalStatus === 'scheduled' ? scheduledAt : null
     });
     return NextResponse.json({ success: true, slug }, { status: 200 });
   } catch (error) {
@@ -84,22 +46,37 @@ export async function POST(req) {
 // Blog güncelleme
 export async function PUT(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const body = await req.json();
-    const { slug, title, date, category, description, text } = body;
+    const { slug, title, date, category, description, text, image, status, scheduledAt } = body;
     if (!slug || !title || !date || !category || !description || !text) {
       return NextResponse.json({ error: 'Eksik alan var.' }, { status: 400 });
     }
+    const finalStatus = ['published', 'scheduled'].includes(status) ? status : 'draft';
+    if (finalStatus === 'scheduled' && !scheduledAt) {
+      return NextResponse.json({ error: 'Zamanlanmış yayın için tarih/saat gerekli.' }, { status: 400 });
+    }
     const db = admin.firestore();
-    await db.collection('blogs').doc(slug).set({
+    const docRef = db.collection('blogs').doc(slug);
+    const existingDoc = await docRef.get();
+    if (existingDoc.exists) {
+      await docRef.collection('history').add({
+        ...existingDoc.data(),
+        savedAt: new Date().toISOString()
+      });
+    }
+    await docRef.set({
       slug,
       title,
       date,
       category,
       description,
-      text
+      text,
+      image: image || '',
+      status: finalStatus,
+      scheduledAt: finalStatus === 'scheduled' ? scheduledAt : null
     }, { merge: true });
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
@@ -110,7 +87,7 @@ export async function PUT(req) {
 // Blog silme
 export async function DELETE(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const { searchParams } = new URL(req.url);
@@ -118,7 +95,11 @@ export async function DELETE(req) {
     if (!slug) return NextResponse.json({ error: 'slug gerekli.' }, { status: 400 });
 
     const db = admin.firestore();
-    await db.collection('blogs').doc(slug).delete();
+    // Firestore alt koleksiyonları (örn. history) parent doc silinince otomatik silinmez;
+    // recursiveDelete ile birlikte silinerek slug tekrar kullanıldığında eski geçmişin
+    // yeni içeriğe sızması engellenir.
+    const docRef = db.collection('blogs').doc(slug);
+    await db.recursiveDelete(docRef);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -128,7 +109,7 @@ export async function DELETE(req) {
 // Tüm blogları listeleme
 export async function GET(req) {
   try {
-    const auth = await requireAdmin(req);
+    const auth = await requireAdmin();
     if (!auth) return NextResponse.json({ error: 'Yetkisiz' }, { status: 401 });
 
     const db = admin.firestore();

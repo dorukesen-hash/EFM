@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
-import admin from '../../../services/firebase/firebaseAdmin';
+import { getArticlesPage } from '../../../services/firestore/content';
 
-export async function GET() {
+export async function GET(req) {
   try {
-    const db = admin.firestore();
-    const snapshot = await db.collection('articles').get();
-    const articles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    return NextResponse.json({ articles }, { status: 200 });
+    const { searchParams } = new URL(req.url);
+    const limit = parseInt(searchParams.get('limit') || '9', 10);
+    const cursor = searchParams.get('cursor') || null;
+
+    const { articles, nextCursor } = await getArticlesPage({ limit, cursor });
+    return NextResponse.json({ articles, nextCursor }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-

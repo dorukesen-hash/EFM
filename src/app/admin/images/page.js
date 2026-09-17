@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import ImageUpload from '@/components/admin/ImageUpload';
+import { IMAGE_STORAGE_ENABLED, IMAGE_STORAGE_DISABLED_MESSAGE } from '@/utils/imageStorage';
 
 const FOLDERS = [
   { key: 'articles', label: 'Makaleler' },
@@ -14,6 +15,20 @@ export default function ImagesPage() {
   const handleImageUpload = (image) => {
     setUploadedImage(image);
   };
+
+  if (!IMAGE_STORAGE_ENABLED) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4">
+        <div className="max-w-xl mx-auto text-center bg-white rounded-lg shadow-lg p-10 mt-12">
+          <h1 className="text-2xl font-bold text-gray-800 mb-3">📸 Resimleri Yönet</h1>
+          <p className="text-gray-600 mb-2">{IMAGE_STORAGE_DISABLED_MESSAGE}</p>
+          <p className="text-sm text-gray-400">
+            Makale ve blog kapak görselleri için formlardaki yerel görsel seçeneklerini kullanabilirsin.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4">

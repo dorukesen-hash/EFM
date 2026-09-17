@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import TiptapEditor from "../tiptap/TiptapEditor";
 import { listImages } from "@/services/firebase/firebaseStorage";
 import { CATEGORIES as categories } from "@/utils/categories";
+import { IMAGE_STORAGE_ENABLED, IMAGE_STORAGE_DISABLED_MESSAGE } from "@/utils/imageStorage";
 import PreviewModal from "./PreviewModal";
 
 // Eski (Tiptap öncesi) düz metin içerikleri HTML'e çevir; içerik zaten HTML ise dokunma.
@@ -89,7 +90,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
 
   // Firebase Storage'dan resimleri yükle
   useEffect(() => {
-    if (open && storageImages.length === 0) {
+    if (IMAGE_STORAGE_ENABLED && open && storageImages.length === 0) {
       loadStorageImages();
     }
   }, [open]);
@@ -238,7 +239,7 @@ export default function AddArticle({ editData, onClose, onSaved }) {
                  </div>
 
                  {/* Firebase Storage Görselleri */}
-                 {storageImages.length > 0 && (
+                 {IMAGE_STORAGE_ENABLED && storageImages.length > 0 && (
                    <div>
                      <div className="flex items-center justify-between mb-2">
                        <p className="text-sm text-gray-600">☁️ Firebase Storage</p>
@@ -269,13 +270,13 @@ export default function AddArticle({ editData, onClose, onSaved }) {
                    </div>
                  )}
 
-                 {loadingImages && (
+                 {IMAGE_STORAGE_ENABLED && loadingImages && (
                    <p className="text-sm text-gray-500 mt-2">Resimleri yüklüyor...</p>
                  )}
 
-                 {!loadingImages && storageImages.length === 0 && (
+                 {!IMAGE_STORAGE_ENABLED && (
                    <p className="text-sm text-gray-500 mt-2">
-                     Henüz resim yüklenmemiş. <a href="/admin/images" className="text-blue-500 hover:underline">Resimler</a> sekmesinden resim yükleyin.
+                     ☁️ {IMAGE_STORAGE_DISABLED_MESSAGE} Yukarıdaki yerel görsellerden birini seçebilirsin.
                    </p>
                  )}
                </div>

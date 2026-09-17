@@ -7,6 +7,7 @@ import Image from "next/image";
 import TiptapEditor from "../tiptap/TiptapEditor";
 import { listImages } from "@/services/firebase/firebaseStorage";
 import { CATEGORIES as categories } from "@/utils/categories";
+import { IMAGE_STORAGE_ENABLED, IMAGE_STORAGE_DISABLED_MESSAGE } from "@/utils/imageStorage";
 import PreviewModal from "./PreviewModal";
 
 // Blog kapak görseli için yerel görsel seçenekleri (AddArticle.js ile aynı havuz)
@@ -120,7 +121,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
 
   // Firebase Storage'dan blog klasöründeki resimleri yükle
   useEffect(() => {
-    if (open && storageImages.length === 0) {
+    if (IMAGE_STORAGE_ENABLED && open && storageImages.length === 0) {
       loadStorageImages();
     }
   }, [open]);
@@ -299,7 +300,7 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
                   </div>
                 </div>
 
-                {storageImages.length > 0 && (
+                {IMAGE_STORAGE_ENABLED && storageImages.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-sm text-gray-600">☁️ Firebase Storage</p>
@@ -325,13 +326,13 @@ export default function BlogAdd({ editData, onClose, onSaved }) {
                   </div>
                 )}
 
-                {loadingImages && (
+                {IMAGE_STORAGE_ENABLED && loadingImages && (
                   <p className="text-sm text-gray-500 mt-2">Resimleri yüklüyor...</p>
                 )}
 
-                {!loadingImages && storageImages.length === 0 && (
+                {!IMAGE_STORAGE_ENABLED && (
                   <p className="text-sm text-gray-500 mt-2">
-                    Henüz resim yüklenmemiş. <a href="/admin/images" className="text-blue-500 hover:underline">Resimler</a> sekmesinden resim yükleyin.
+                    ☁️ {IMAGE_STORAGE_DISABLED_MESSAGE} Yukarıdaki yerel görsellerden birini seçebilirsin.
                   </p>
                 )}
               </div>

@@ -9,17 +9,21 @@ import TiptapImage from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import { useEffect, useState } from 'react';
 import { uploadImage } from '@/services/firebase/firebaseStorage';
+import { IMAGE_STORAGE_ENABLED, IMAGE_STORAGE_DISABLED_MESSAGE } from '@/utils/imageStorage';
 
 const FONT_SIZES = ['12', '14', '16', '18', '20', '24', '28', '32'];
 
-function ToolbarButton({ onClick, active, title, children }) {
+function ToolbarButton({ onClick, active, title, disabled, children }) {
   return (
     <button
       type="button"
-      onMouseDown={e => { e.preventDefault(); onClick(); }}
+      onMouseDown={e => { e.preventDefault(); if (!disabled) onClick(); }}
+      disabled={disabled}
       title={title}
       className={`px-2 py-1 rounded text-sm font-medium transition-colors ${
-        active ? 'bg-primary text-white' : 'text-primary hover:bg-primary/10'
+        disabled
+          ? 'text-primary/30 cursor-not-allowed'
+          : active ? 'bg-primary text-white' : 'text-primary hover:bg-primary/10'
       }`}
     >
       {children}
@@ -192,7 +196,12 @@ export default function TiptapEditor({ value = '', onChange, readOnly = false, i
           onChange={handleImageFileChange}
           className="hidden"
         />
-        <ToolbarButton onClick={handleImageButtonClick} active={false} title="Resim Ekle">
+        <ToolbarButton
+          onClick={handleImageButtonClick}
+          active={false}
+          disabled={!IMAGE_STORAGE_ENABLED}
+          title={IMAGE_STORAGE_ENABLED ? 'Resim Ekle' : IMAGE_STORAGE_DISABLED_MESSAGE}
+        >
           {uploadingImage ? '⏳' : '🖼️'}
         </ToolbarButton>
         <ToolbarButton onClick={handleLinkButtonClick} active={editor.isActive('link')} title="Bağlantı Ekle/Düzenle">

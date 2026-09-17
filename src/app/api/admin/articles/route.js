@@ -123,7 +123,12 @@ export async function GET(req) {
 
     const db = admin.firestore();
     const snapshot = await db.collection('articles').get();
-    const articles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Eski kayıtların bir kısmında slug alanı yok; admin listesi checkbox/silme
+    // işlemlerini article.slug ile anahtarlıyor, eksikse doküman ID'sine düş.
+    const articles = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return { id: doc.id, ...data, slug: data.slug || doc.id };
+    });
 
     // En güncel makale ilk sırada gösterilsin diye tarihe göre (yeniden eskiye) sırala
     articles.sort((a, b) => {
